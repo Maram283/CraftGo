@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'role_selection_screen.dart';
 
 void main() {
   runApp(const CraftGoApp());
@@ -89,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   // ---------------- Text Dictionary (AR / EN) ----------------
   String get titleText =>
-      isArabic ? "فنّ حقيقي بأيدٍ موثوقة" : "Real Craft, Trusted Hands";
+      isArabic ? "فن حقيقي بأيد موثوقة" : "Real Craft, Trusted Hands";
 
   String get startButtonText => isArabic ? "ابدأ رحلتك" : "Start Your Journey";
 
@@ -284,11 +286,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           shaderCallback: (bounds) {
                             final dx = _shimmerController.value;
                             return LinearGradient(
-                              colors: shimmerColors,
-                              stops: const [0.0, 0.4, 0.5, 1.0],
-                              begin: Alignment(-1.0 + dx * 3, 0),
-                              end: Alignment(1.0 + dx * 3, 0),
-                              tileMode: TileMode.clamp,
+                              colors: logoShimmerColors,
+                              begin: Alignment(-1.0 + dx * 2, -0.5),
+                              end: Alignment(1.0 + dx * 2, 0.5),
+                              tileMode: TileMode.mirror,
                             ).createShader(bounds);
                           },
                           child: FittedBox(
@@ -300,7 +301,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   : TextDirection.ltr,
                               textAlign: TextAlign.center,
                               maxLines: 1,
-                              style: const TextStyle(
+                              style: GoogleFonts.arefRuqaa(
                                 color: Colors.white,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -369,7 +370,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RoleSelectionScreen(
+                                isArabic: isArabic,
+                                isDarkMode: isDarkMode,
+                                onToggleLanguage: widget.onToggleLanguage,
+                                onToggleTheme: widget.onToggleTheme,
+                              ),
+                            ),
+                          );
+                        },
                         child: Text(
                           startButtonText,
                           style: TextStyle(
