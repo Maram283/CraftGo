@@ -9,6 +9,7 @@ class ClientDashboard extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onToggleLanguage;
   final VoidCallback onToggleTheme;
+  final bool isGuest;
 
   const ClientDashboard({
     super.key,
@@ -16,6 +17,7 @@ class ClientDashboard extends StatefulWidget {
     required this.isDarkMode,
     required this.onToggleLanguage,
     required this.onToggleTheme,
+    this.isGuest = false,
   });
 
   @override
@@ -94,10 +96,12 @@ class _ClientDashboardState extends State<ClientDashboard> {
   // Category filter items
   List<Map<String, dynamic>> get categories => [
     {"icon": Icons.all_inclusive, "titleAr": "الكل", "titleEn": "All"},
-    {"icon": Icons.checkroom_outlined, "titleAr": "تطريز", "titleEn": "Crochet"},
-    {"icon": Icons.local_cafe_outlined, "titleAr": "فخار", "titleEn": "Pottery"},
-    {"icon": Icons.watch_outlined, "titleAr": "مجوهرات", "titleEn": "Jewelry"},
-    {"icon": Icons.chair_outlined, "titleAr": "خشب", "titleEn": "Wood"},
+    {"icon": Icons.checkroom_outlined, "titleAr": "تطريز", "titleEn": "تطريز"},
+    {"icon": Icons.local_cafe_outlined, "titleAr": "فخار", "titleEn": "فخار"},
+    {"icon": Icons.watch_outlined, "titleAr": "مجوهرات", "titleEn": "مجوهرات"},
+    {"icon": Icons.chair_outlined, "titleAr": "خشب", "titleEn": "خشب"},
+    {"icon": Icons.brush_outlined, "titleAr": "رسم", "titleEn": "رسم"},
+    {"icon": Icons.auto_awesome, "titleAr": "ماكراميه", "titleEn": "ماكرامي"},
   ];
 
   // Mock Craftsmen
@@ -128,7 +132,25 @@ class _ClientDashboardState extends State<ClientDashboard> {
       "craftAr": "الفخار والخزف",
       "craftEn": "Pottery & Ceramics",
       "image": "assets/images/pottery.jpg"
-    }
+    },
+    {
+      "nameAr": "هنا سلامة",
+      "nameEn": "Hana Salama",
+      "rating": "4.7",
+      "jobs": "28",
+      "craftAr": "حلي ومجوهرات",
+      "craftEn": "Jewelry & Accessories",
+      "image": "assets/images/jewelry.jpg"
+    },
+    {
+      "nameAr": "عمر السيد",
+      "nameEn": "Omar Al-Sayed",
+      "rating": "4.6",
+      "jobs": "19",
+      "craftAr": "رسم وفن تشكيلي",
+      "craftEn": "Painting & Fine Art",
+      "image": "assets/images/basket.jpg"
+    },
   ];
 
   // Mock products feed — replace with real API data later.
@@ -716,6 +738,82 @@ class _ClientDashboardState extends State<ClientDashboard> {
     return count;
   }
 
+  void _showGuestPrompt() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+            border: Border.all(color: cardBorderColor),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFD4A017).withOpacity(0.15),
+                ),
+                child: const Icon(Icons.lock_outline, color: Color(0xFFD4A017), size: 30),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                isArabic ? "ميزة للأعضاء فقط" : "Members Only Feature",
+                style: TextStyle(
+                  color: primaryTextColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                isArabic
+                    ? "يرجى تسجيل الدخول للاستفادة من هذه الميزة والتواصل مع أمهر الحرفيين."
+                    : "Please log in to use this feature and connect with the best craftsmen.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: secondaryTextColor,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 30),
+              // We just pop the modal. The user can go to the login screen by tapping the Profile tab.
+              // Actually, since we are inside MainShell, we could just instruct them to go to Profile tab.
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD4A017),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    isArabic ? "حسناً، فهمت" : "Got it",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final direction = isArabic ? TextDirection.rtl : TextDirection.ltr;
@@ -726,19 +824,97 @@ class _ClientDashboardState extends State<ClientDashboard> {
         backgroundColor: backgroundColor,
         // Floating Action Button to post smart job
         floatingActionButton: FloatingActionButton(
-          onPressed: _openAIOrderCreator,
+          onPressed: widget.isGuest ? _showGuestPrompt : _openAIOrderCreator,
           backgroundColor: const Color(0xFFD4A017),
           child: const Icon(Icons.add, color: Colors.black),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   // Top bar is handled by MainShell — nothing here.
+
+                  // ── Hero Banner ────────────────────────────────────────────
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(22),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [
+                          Color(0xFF1A2840),
+                          Color(0xFF0D1420),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: const Color(0xFFD4A017).withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFD4A017).withOpacity(0.08),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.auto_awesome, color: Color(0xFFD4A017), size: 18),
+                            const SizedBox(width: 8),
+                            Text(
+                              isArabic ? "مرحباً بك في CraftGo" : "Welcome to CraftGo",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          isArabic
+                              ? "اكتشف فن الحرف اليدوية"
+                              : "Discover Handcraft Art",
+                          style: GoogleFonts.arefRuqaa(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          isArabic
+                              ? "تواصل مع أمهر الحرفيين المحليين وفصّل ما تحلم به"
+                              : "Connect with top local artisans and craft your dream piece",
+                          style: const TextStyle(color: Colors.white60, fontSize: 12.5, height: 1.5),
+                        ),
+                        const SizedBox(height: 18),
+                        Row(
+                          children: [
+                            _buildHeroStat(isArabic ? "500+" : "500+", isArabic ? "حرفي" : "Artisans"),
+                            const SizedBox(width: 20),
+                            _buildHeroStat(isArabic ? "20+" : "20+", isArabic ? "حرفة" : "Crafts"),
+                            const SizedBox(width: 20),
+                            _buildHeroStat(isArabic ? "98%" : "98%", isArabic ? "رضا الزبائن" : "Satisfaction"),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
 
                   // Header title
                   Text(
@@ -834,9 +1010,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                   ),
                   const SizedBox(height: 25),
 
-                  // Categories Filter Chips Row
+                  // Circular Categories Row
                   SizedBox(
-                    height: 42,
+                    height: 90,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
@@ -844,11 +1020,60 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       itemBuilder: (context, index) {
                         final cat = categories[index];
                         final isSelected = selectedFilterIndex == index || (selectedFilterIndex == null && index == 0);
-                        return _buildCategoryChip(
-                          icon: cat["icon"],
-                          title: isArabic ? cat["titleAr"] : cat["titleEn"],
-                          isSelected: isSelected,
-                          index: index,
+                        return GestureDetector(
+                          onTap: () => setState(() {
+                            selectedFilterIndex = index == 0 ? null : index;
+                          }),
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 14),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSelected
+                                        ? const Color(0xFFD4A017)
+                                        : (isDarkMode ? Colors.white.withOpacity(0.07) : Colors.white),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? const Color(0xFFD4A017)
+                                          : cardBorderColor,
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: const Color(0xFFD4A017).withOpacity(0.3),
+                                              blurRadius: 12,
+                                              spreadRadius: 1,
+                                            )
+                                          ]
+                                        : [],
+                                  ),
+                                  child: Icon(
+                                    cat["icon"],
+                                    size: 24,
+                                    color: isSelected
+                                        ? Colors.black
+                                        : (isDarkMode ? Colors.white70 : Colors.black54),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  isArabic ? cat["titleAr"] : cat["titleEn"],
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelected
+                                        ? const Color(0xFFD4A017)
+                                        : secondaryTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -881,33 +1106,37 @@ class _ClientDashboardState extends State<ClientDashboard> {
 
                   // Horizontal list of craftsmen
                   SizedBox(
-                    height: 240,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: craftsmen.length,
-                      itemBuilder: (context, index) {
-                        final maker = craftsmen[index];
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ArtisanProfilePage(
-                                artisan: maker,
-                                isArabic: isArabic,
-                                isDarkMode: isDarkMode,
+                    height: 255,
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: craftsmen.length,
+                        itemBuilder: (context, index) {
+                          final maker = craftsmen[index];
+                          return GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ArtisanProfilePage(
+                                  artisan: maker,
+                                  isArabic: isArabic,
+                                  isDarkMode: isDarkMode,
+                                  isGuest: widget.isGuest,
+                                ),
                               ),
                             ),
-                          ),
-                          child: _buildCraftsmanCard(
-                            name: isArabic ? maker["nameAr"] : maker["nameEn"],
-                            craft: isArabic ? maker["craftAr"] : maker["craftEn"],
-                            rating: maker["rating"],
-                            jobs: maker["jobs"],
-                            imagePath: maker["image"],
-                          ),
-                        );
-                      },
+                            child: _buildCraftsmanCard(
+                              name: isArabic ? maker["nameAr"] : maker["nameEn"],
+                              craft: isArabic ? maker["craftAr"] : maker["craftEn"],
+                              rating: maker["rating"],
+                              jobs: maker["jobs"],
+                              imagePath: maker["image"],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -958,6 +1187,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
                               product: product,
                               isArabic: isArabic,
                               isDarkMode: isDarkMode,
+                              isGuest: widget.isGuest,
                             ),
                           ),
                         ),
@@ -969,6 +1199,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),
@@ -997,6 +1228,26 @@ class _ClientDashboardState extends State<ClientDashboard> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildHeroStat(String value, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: Color(0xFFD4A017),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white60, fontSize: 11),
+        ),
+      ],
     );
   }
 

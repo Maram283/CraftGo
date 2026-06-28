@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'craftsman_registration_screen.dart';
 
 
 class CraftsmanCategoryScreen extends StatefulWidget {
@@ -230,7 +231,9 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
 
                   // Grid of Categories
                   Expanded(
-                    child: GridView.builder(
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -276,6 +279,7 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                       },
                     ),
                   ),
+                ),
                   const SizedBox(height: 20),
 
                   // Confirm button
@@ -315,7 +319,18 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                         onPressed: selectedIndex != null
                             ? () {
                                 final selectedCat = categories[selectedIndex!];
-
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CraftsmanRegistrationScreen(
+                                      selectedCategory: selectedCat,
+                                      isArabic: isArabic,
+                                      isDarkMode: isDarkMode,
+                                      onToggleLanguage: toggleLanguage,
+                                      onToggleTheme: toggleTheme,
+                                    ),
+                                  ),
+                                );
                               }
                             : null,
                         child: Text(

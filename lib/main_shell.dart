@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'client_dashboard.dart';
 import 'client_profile.dart';
+import 'chat_inbox_screen.dart';
 import 'my_orders_screen.dart';
 import 'ai_order_screen.dart';
-import 'chat_inbox_screen.dart';
+import 'customer_login_screen.dart';
+import 'cart_screen.dart';
+import 'notifications_screen.dart';
+import 'favorites_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // MainShell — persistent AppBar + BottomNavigationBar
 //
@@ -25,6 +29,7 @@ class MainShell extends StatefulWidget {
   // For artisan role, pass extra profile data needed by CraftsmanDashboard.
   // null = customer mode.
   final Map<String, String>? craftsmanProfile;
+  final bool isGuest;
 
   const MainShell({
     super.key,
@@ -34,6 +39,7 @@ class MainShell extends StatefulWidget {
     required this.onToggleTheme,
     this.craftsmanProfile,
     this.userName,
+    this.isGuest = false,
   });
 
   @override
@@ -44,8 +50,6 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   // ── Local state — initialized to false until initState runs ───────────────
-  // Never use `late` here; use nullable + fallback so getters don't crash
-  // before initState if Flutter inspects them early.
   bool _isArabic = false;
   bool _isDarkMode = true;
   bool _stateReady = false;
@@ -93,39 +97,249 @@ class _MainShellState extends State<MainShell> {
 
   // ── Pages ─────────────────────────────────────────────────────────────────
   List<Widget> get _pages => [
-    // ── Tab 0: Home / Customer Dashboard ──────────────────────────────────
+    // ── Tab 0: Home / Customer Dashboard (Always accessible) ──────────────
     ClientDashboard(
       isArabic: _isArabic,
       isDarkMode: _isDarkMode,
       onToggleLanguage: _toggleLanguage,
       onToggleTheme: _toggleTheme,
+      isGuest: widget.isGuest,
     ),
 
     // ── Tab 1: AI Search ──────────────────────────────────────────────────
-    AIOrderScreen(
-      isArabic: _isArabic,
-      isDarkMode: _isDarkMode,
-    ),
+    widget.isGuest
+        ? _buildLoginRequiredView(Icons.auto_awesome, _titles[1])
+        : AIOrderScreen(
+            isArabic: _isArabic,
+            isDarkMode: _isDarkMode,
+          ),
+          
     // ── Tab 2: My Orders ──────────────────────────────────────────────────
-    MyOrdersScreen(
-      isArabic: _isArabic,
-      isDarkMode: _isDarkMode,
-    ),
+    widget.isGuest
+        ? _buildLoginRequiredView(Icons.receipt_long, _titles[2])
+        : MyOrdersScreen(
+            isArabic: _isArabic,
+            isDarkMode: _isDarkMode,
+          ),
 
     // ── Tab 3: Chats ──────────────────────────────────────────────────────
-    ChatInboxScreen(
-      isArabic: _isArabic,
-      isDarkMode: _isDarkMode,
-    ),
+    widget.isGuest
+        ? _buildLoginRequiredView(Icons.chat_bubble_outline, _titles[3])
+        : ChatInboxScreen(
+            isArabic: _isArabic,
+            isDarkMode: _isDarkMode,
+          ),
+          
     // ── Tab 4: Profile ────────────────────────────────────────────────────
-    CustomerProfileScreen(
-      isArabic: _isArabic,
-      isDarkMode: _isDarkMode,
-      onToggleLanguage: _toggleLanguage,
-      onToggleTheme: _toggleTheme,
-      userName: widget.userName ?? 'User',
-    ),
+    widget.isGuest
+        ? _buildLoginRequiredView(Icons.person_outline, _titles[4])
+        : CustomerProfileScreen(
+            isArabic: _isArabic,
+            isDarkMode: _isDarkMode,
+            onToggleLanguage: _toggleLanguage,
+            onToggleTheme: _toggleTheme,
+            userName: widget.userName ?? 'User',
+          ),
   ];
+
+  Widget _buildLoginRequiredView(IconData icon, String title) {
+    return Scaffold(
+      backgroundColor: _bg,
+      appBar: AppBar(
+        backgroundColor: _bg,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          title,
+          style: TextStyle(color: _primaryText, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: _accent.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 60, color: _accent),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                _isArabic ? "ميزة للأعضاء فقط" : "Members Only Feature",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: _primaryText,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _isArabic 
+                    ? "يرجى تسجيل الدخول للوصول إلى هذه الميزة والاستمتاع بكامل خدمات CraftGo."
+                    : "Please log in to access this feature and enjoy all CraftGo services.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: _primaryText.withOpacity(0.7),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _accent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27),
+                    ),
+                  ),
+                  onPressed: () {
+                    // Navigate to Login screen and remove MainShell from stack
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CustomerLoginScreen(
+                          isArabic: _isArabic,
+                          isDarkMode: _isDarkMode,
+                          onToggleLanguage: _toggleLanguage,
+                          onToggleTheme: _toggleTheme,
+                          onLoginSuccess: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MainShell(
+                                  isArabic: _isArabic,
+                                  isDarkMode: _isDarkMode,
+                                  onToggleLanguage: _toggleLanguage,
+                                  onToggleTheme: _toggleTheme,
+                                  isGuest: false,
+                                ),
+                              ),
+                            );
+                          },
+                          onGuestAccess: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MainShell(
+                                  isArabic: _isArabic,
+                                  isDarkMode: _isDarkMode,
+                                  onToggleLanguage: _toggleLanguage,
+                                  onToggleTheme: _toggleTheme,
+                                  isGuest: true,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    _isArabic ? "تسجيل الدخول" : "Login Now",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: _isDarkMode ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Guest Prompt Dialog ──────────────────────────────────────────────────
+  void _showGuestPromptDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: _surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          _isArabic ? 'تنبيه' : 'Notice',
+          style: TextStyle(color: _primaryText, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          _isArabic 
+              ? 'يرجى تسجيل الدخول للوصول إلى هذه الميزة.' 
+              : 'Please log in to access this feature.',
+          style: TextStyle(color: _primaryText),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              _isArabic ? 'إلغاء' : 'Cancel',
+              style: TextStyle(color: _primaryText.withValues(alpha: 0.6)),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _accent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CustomerLoginScreen(
+                    isArabic: _isArabic,
+                    isDarkMode: _isDarkMode,
+                    onToggleLanguage: _toggleLanguage,
+                    onToggleTheme: _toggleTheme,
+                    onLoginSuccess: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MainShell(
+                            isArabic: _isArabic,
+                            isDarkMode: _isDarkMode,
+                            onToggleLanguage: _toggleLanguage,
+                            onToggleTheme: _toggleTheme,
+                            isGuest: false,
+                          ),
+                        ),
+                      );
+                    },
+                    onGuestAccess: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MainShell(
+                            isArabic: _isArabic,
+                            isDarkMode: _isDarkMode,
+                            onToggleLanguage: _toggleLanguage,
+                            onToggleTheme: _toggleTheme,
+                            isGuest: true,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            child: Text(
+              _isArabic ? 'تسجيل الدخول' : 'Login',
+              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   // ── Logout Dialog ──────────────────────────────────────────────────────────
   void _showLogoutDialog() {
@@ -192,6 +406,54 @@ class _MainShellState extends State<MainShell> {
               ),
             ),
             actions: [
+              // Favorites
+              _IconBtn(
+                icon: Icons.favorite_border_rounded,
+                color: _primaryText,
+                surface: _surface,
+                border: _border,
+                onTap: () {
+                  if (widget.isGuest) {
+                    _showGuestPromptDialog();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FavoritesScreen(
+                          isArabic: _isArabic,
+                          isDarkMode: _isDarkMode,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(width: 8),
+
+              // Cart
+              _IconBtn(
+                icon: Icons.shopping_cart_outlined,
+                color: _primaryText,
+                surface: _surface,
+                border: _border,
+                onTap: () {
+                  if (widget.isGuest) {
+                    _showGuestPromptDialog();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CartScreen(
+                          isArabic: _isArabic,
+                          isDarkMode: _isDarkMode,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(width: 8),
+
               // Notifications
               _IconBtn(
                 icon: Icons.notifications_none_rounded,
@@ -200,7 +462,19 @@ class _MainShellState extends State<MainShell> {
                 border: _border,
                 badge: true,
                 onTap: () {
-                  // TODO: push NotificationsScreen
+                  if (widget.isGuest) {
+                    _showGuestPromptDialog();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => NotificationsScreen(
+                          isArabic: _isArabic,
+                          isDarkMode: _isDarkMode,
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
               const SizedBox(width: 8),

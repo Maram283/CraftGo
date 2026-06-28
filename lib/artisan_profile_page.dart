@@ -9,12 +9,14 @@ class ArtisanProfilePage extends StatefulWidget {
   final Map<String, dynamic> artisan;
   final bool isArabic;
   final bool isDarkMode;
+  final bool isGuest;
 
   const ArtisanProfilePage({
     super.key,
     required this.artisan,
     required this.isArabic,
     required this.isDarkMode,
+    this.isGuest = false,
   });
 
   @override
@@ -27,6 +29,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
   late bool isDarkMode;
 
   bool _following = false;
+  bool _isFavorite = false;
   int _productTab = 0;
   late TabController _tabController;
 
@@ -198,6 +201,80 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
     );
   }
 
+  void _showGuestPrompt() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+            border: Border.all(color: widget.isDarkMode ? Colors.white12 : Colors.black12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFD4A017).withOpacity(0.15),
+                ),
+                child: const Icon(Icons.lock_outline, color: Color(0xFFD4A017), size: 30),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                widget.isArabic ? "ميزة للأعضاء فقط" : "Members Only Feature",
+                style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : Colors.black87,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                widget.isArabic
+                    ? "يرجى تسجيل الدخول للاستفادة من هذه الميزة والتواصل مع أمهر الحرفيين."
+                    : "Please log in to use this feature and connect with the best craftsmen.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white70 : Colors.black54,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD4A017),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    widget.isArabic ? "حسناً، فهمت" : "Got it",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: widget.isDarkMode ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final a = widget.artisan;
@@ -223,7 +300,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _showSnack(t('فتح نموذج الطلب المخصص', 'Opening custom order form...')),
+                  onPressed: widget.isGuest 
+                      ? _showGuestPrompt 
+                      : () => _showSnack(t('فتح نموذج الطلب المخصص', 'Opening custom order form...')),
                   icon: Icon(Icons.edit_outlined, size: 16, color: _gold),
                   label: Text(
                     t('طلب مخصص', 'Custom Order'),
@@ -240,7 +319,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _showSnack(t('فتح نموذج التوظيف', 'Opening hire form...')),
+                  onPressed: widget.isGuest 
+                      ? _showGuestPrompt 
+                      : () => _showSnack(t('فتح نموذج التوظيف', 'Opening hire form...')),
                   icon: const Icon(Icons.handshake_outlined, size: 16, color: Colors.black),
                   label: Text(
                     t('استئجار / موقع', 'Hire / On-Site'),
@@ -273,6 +354,54 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 border: cardBorderColor,
               ),
               actions: [
+                // ── Favourite heart button ──
+                GestureDetector(
+                  onTap: () {
+                    if (widget.isGuest) {
+                      _showGuestPrompt();
+                      return;
+                    }
+                    setState(() => _isFavorite = !_isFavorite);
+                    _showSnack(
+                      _isFavorite
+                          ? t('تمت الإضافة إلى المفضلة ❤️', 'Added to Favorites ❤️')
+                          : t('تمت الإزالة من المفضلة', 'Removed from Favorites'),
+                    );
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutBack,
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _isFavorite
+                          ? const Color(0xFFE53935).withValues(alpha: 0.15)
+                          : topButtonBackground,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _isFavorite
+                            ? const Color(0xFFE53935).withValues(alpha: 0.6)
+                            : cardBorderColor,
+                        width: 1.5,
+                      ),
+                      boxShadow: _isFavorite
+                          ? [
+                              BoxShadow(
+                                color: const Color(0xFFE53935).withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              )
+                            ]
+                          : [],
+                    ),
+                    child: Icon(
+                      _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      color: _isFavorite ? const Color(0xFFE53935) : primaryTextColor,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 _CircleBtn(
                   icon: Icons.share_outlined,
                   onTap: () {},
@@ -417,7 +546,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                             border: cardBorderColor,
                             surface: topButtonBackground,
                             text: primaryTextColor,
-                            onTap: () => setState(() => _following = !_following),
+                            onTap: widget.isGuest 
+                                ? _showGuestPrompt 
+                                : () => setState(() => _following = !_following),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -430,7 +561,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                             border: cardBorderColor,
                             surface: topButtonBackground,
                             text: primaryTextColor,
-                            onTap: () => _showSnack(t('فتح المحادثة...', 'Opening chat...')),
+                            onTap: widget.isGuest 
+                                ? _showGuestPrompt 
+                                : () => _showSnack(t('فتح المحادثة...', 'Opening chat...')),
                           ),
                         ),
                       ],
@@ -794,6 +927,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                         dim: secondaryTextColor,
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -1467,7 +1601,7 @@ class _ReviewCard extends StatelessWidget {
               Row(
                 children: List.generate(
                   5,
-                      (i) => Icon(
+                  (i) => Icon(
                     Icons.star_rounded,
                     size: 13,
                     color: i < rating
@@ -1492,3 +1626,4 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
+

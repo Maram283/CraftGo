@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'order_detail_screen.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   final bool isArabic;
@@ -451,7 +452,20 @@ class _OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusColor = isPending ? accent : (order['status'] == t('تم التسليم', 'Delivered') ? Colors.green : Colors.redAccent);
 
-    return Container(
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderDetailScreen(
+              isArabic: isArabic,
+              isDarkMode: isDarkMode,
+              order: order,
+            ),
+          ),
+        );
+      },
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -528,6 +542,6 @@ class _OrderCard extends StatelessWidget {
             ),
         ],
       ),
-    );
+    ));
   }
 }

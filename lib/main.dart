@@ -240,7 +240,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             left: 55,
                             top: 35,
                             child: _glassCard(
-                              'assets/images/jewelry.jpg',
+                              'assets/images/pottery.jpg',
                               width: 105,
                               height: 135,
                             ),
@@ -249,7 +249,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             left: 125,
                             top: 0,
                             child: _glassCard(
-                              'assets/images/pottery.jpg',
+                              'assets/images/jewelry.jpg',
                               width: 130,
                               height: 180,
                             ),

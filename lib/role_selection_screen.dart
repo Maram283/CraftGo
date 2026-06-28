@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_category_screen.dart';
 import 'admin_dashboard.dart';
+import 'customer_login_screen.dart';
 import 'main_shell.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
@@ -314,14 +315,42 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                       secondaryTextColor: secondaryTextColor,
                       cardBorderColor: cardBorderColor,
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MainShell(
+                            builder: (loginCtx) => CustomerLoginScreen(
                               isArabic: isArabic,
                               isDarkMode: isDarkMode,
                               onToggleLanguage: toggleLanguage,
                               onToggleTheme: toggleTheme,
+                              onLoginSuccess: () {
+                                Navigator.of(loginCtx).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (_) => MainShell(
+                                      isArabic: isArabic,
+                                      isDarkMode: isDarkMode,
+                                      onToggleLanguage: toggleLanguage,
+                                      onToggleTheme: toggleTheme,
+                                      isGuest: false,
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
+                              onGuestAccess: () {
+                                Navigator.of(loginCtx).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (_) => MainShell(
+                                      isArabic: isArabic,
+                                      isDarkMode: isDarkMode,
+                                      onToggleLanguage: toggleLanguage,
+                                      onToggleTheme: toggleTheme,
+                                      isGuest: true,
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
                             ),
                           ),
                         );

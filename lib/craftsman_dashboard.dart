@@ -14,6 +14,7 @@ class CraftsmanDashboard extends StatefulWidget {
   final String experience;
   final String bio;
   final bool isVerified;
+  final bool isPending;
 
   const CraftsmanDashboard({
     super.key,
@@ -28,6 +29,7 @@ class CraftsmanDashboard extends StatefulWidget {
     required this.experience,
     required this.bio,
     this.isVerified = true,
+    this.isPending = false,
   });
 
   @override
@@ -80,6 +82,7 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
 
   // Helper to map category to asset images in project
   List<String> getCategoryAssets() {
+    if (widget.isPending) return [];
     final title = widget.categoryTitleEn.toLowerCase();
     if (title.contains('crochet')) {
       return ['assets/images/crochet.jpg', 'assets/images/crochet.jpg'];
@@ -97,6 +100,7 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
 
   // Helper to get mock orders based on category
   List<Map<String, String>> getCategoryOrders() {
+    if (widget.isPending) return [];
     final title = widget.categoryTitleEn.toLowerCase();
     if (title.contains('crochet')) {
       return [
@@ -181,8 +185,10 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
@@ -338,19 +344,19 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                       children: [
                         _buildStatItem(
                           isArabic ? "الأرباح" : "Earnings",
-                          "1,250 JOD",
+                          widget.isPending ? "0 JOD" : "1,250 JOD",
                           Icons.account_balance_wallet_outlined,
                         ),
                         _buildStatDivider(),
                         _buildStatItem(
                           isArabic ? "التقييم" : "Rating",
-                          "4.9 ★",
+                          widget.isPending ? "—" : "4.9 ★",
                           Icons.star_outline,
                         ),
                         _buildStatDivider(),
                         _buildStatItem(
                           isArabic ? "الطلبات" : "Completed",
-                          "24",
+                          widget.isPending ? "0" : "24",
                           Icons.done_all_outlined,
                         ),
                       ],
@@ -371,9 +377,11 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
 
                   SizedBox(
                     height: 160,
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
                       itemCount: assets.length + 1,
                       itemBuilder: (context, index) {
                         if (index == assets.length) {
@@ -384,7 +392,8 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 35),
+                ),
+                const SizedBox(height: 35),
 
                   // Section 2: Available Orders in field
                   Row(
@@ -408,25 +417,51 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                   const SizedBox(height: 15),
 
                   // List of Orders
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: orders.length,
-                    itemBuilder: (context, index) {
-                      final order = orders[index];
-                      return _buildOrderCard(
-                        title: isArabic ? order["titleAr"]! : order["titleEn"]!,
-                        client: order["client"]!,
-                        price: order["price"]!,
-                        time: order["time"]!,
-                      );
-                    },
-                  ),
+                  if (widget.isPending)
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4A017).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFD4A017).withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: Color(0xFFD4A017)),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Text(
+                              isArabic
+                                  ? "حسابك قيد المراجعة. لن تتمكن من استقبال الطلبات حتى يتم توثيق حسابك بالكامل."
+                                  : "Account pending verification. You cannot receive orders until your account is fully verified.",
+                              style: TextStyle(color: primaryTextColor, height: 1.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: orders.length,
+                      itemBuilder: (context, index) {
+                        final order = orders[index];
+                        return _buildOrderCard(
+                          title: isArabic ? order["titleAr"]! : order["titleEn"]!,
+                          client: order["client"]!,
+                          price: order["price"]!,
+                          time: order["time"]!,
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
           ),
         ),
+      ),
       ),
     );
   }

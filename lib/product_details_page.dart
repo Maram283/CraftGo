@@ -24,12 +24,14 @@ class ProductDetailsPage extends StatefulWidget {
   final Map<String, dynamic> product;
   final bool isArabic;
   final bool isDarkMode;
+  final bool isGuest;
 
   const ProductDetailsPage({
     super.key,
     required this.product,
     required this.isArabic,
     required this.isDarkMode,
+    this.isGuest = false,
   });
 
   @override
@@ -73,6 +75,80 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   String t(String ar, String en) => isArabic ? ar : en;
 
+  void _showGuestPrompt() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+            border: Border.all(color: widget.isDarkMode ? Colors.white12 : Colors.black12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFD4A017).withOpacity(0.15),
+                ),
+                child: const Icon(Icons.lock_outline, color: Color(0xFFD4A017), size: 30),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                widget.isArabic ? "ميزة للأعضاء فقط" : "Members Only Feature",
+                style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : Colors.black87,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                widget.isArabic
+                    ? "يرجى تسجيل الدخول لاستخدام هذه الميزة والاستمتاع بجميع خدماتنا."
+                    : "Please log in to use this feature and enjoy all our services.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white70 : Colors.black54,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD4A017),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    widget.isArabic ? "حسناً، فهمت" : "Got it",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: widget.isDarkMode ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   // ── Mock image slots (replace with product["images"] list later) ──────────
   // Using the product icon repeated across 3 "slides" as a placeholder.
   List<String?> get _images => [null, null, null];
@@ -108,8 +184,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           isArabic: isArabic,
           price: price,
           quantity: _quantity,
-          onAddToCart: () => _showSnack(t('أُضيف إلى السلة', 'Added to cart')),
-          onBuyNow: () => _showSnack(t('جارٍ التوجه للدفع...', 'Going to checkout...')),
+          onAddToCart: widget.isGuest ? _showGuestPrompt : () => _showSnack(t('أُضيف إلى السلة', 'Added to cart')),
+          onBuyNow: widget.isGuest ? _showGuestPrompt : () => _showSnack(t('جارٍ التوجه للدفع...', 'Going to checkout...')),
         ),
 
         body: CustomScrollView(
@@ -131,7 +207,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               actions: [
                 _CircleBtn(
                   icon: _inWishlist ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  onTap: () => setState(() => _inWishlist = !_inWishlist),
+                  onTap: widget.isGuest 
+                      ? _showGuestPrompt 
+                      : () => setState(() => _inWishlist = !_inWishlist),
                   bg: surface,
                   iconColor: _inWishlist ? Colors.redAccent : text,
                   border: border,
