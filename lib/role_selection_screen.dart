@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_category_screen.dart';
-import 'client_dashboard.dart';
 import 'admin_dashboard.dart';
+import 'main_shell.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   final bool isArabic;
@@ -63,52 +63,52 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
 
   // Staggered Entrance Animations definitions
   Animation<double> get _titleFade => CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
-      );
+    parent: _entranceController,
+    curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+  );
   Animation<Offset> get _titleSlide => Tween<Offset>(
-        begin: const Offset(0, 0.2),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
-      ));
+    begin: const Offset(0, 0.2),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(
+    parent: _entranceController,
+    curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
+  ));
 
   Animation<double> get _card1Fade => CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.2, 0.6, curve: Curves.easeOut),
-      );
+    parent: _entranceController,
+    curve: const Interval(0.2, 0.6, curve: Curves.easeOut),
+  );
   Animation<Offset> get _card1Slide => Tween<Offset>(
-        begin: const Offset(0, 0.15),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
-      ));
+    begin: const Offset(0, 0.15),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(
+    parent: _entranceController,
+    curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
+  ));
 
   Animation<double> get _card2Fade => CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.35, 0.75, curve: Curves.easeOut),
-      );
+    parent: _entranceController,
+    curve: const Interval(0.35, 0.75, curve: Curves.easeOut),
+  );
   Animation<Offset> get _card2Slide => Tween<Offset>(
-        begin: const Offset(0, 0.15),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.35, 0.75, curve: Curves.easeOutCubic),
-      ));
+    begin: const Offset(0, 0.15),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(
+    parent: _entranceController,
+    curve: const Interval(0.35, 0.75, curve: Curves.easeOutCubic),
+  ));
 
   Animation<double> get _card3Fade => CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.5, 0.9, curve: Curves.easeOut),
-      );
+    parent: _entranceController,
+    curve: const Interval(0.5, 0.9, curve: Curves.easeOut),
+  );
   Animation<Offset> get _card3Slide => Tween<Offset>(
-        begin: const Offset(0, 0.15),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
-      ));
+    begin: const Offset(0, 0.15),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(
+    parent: _entranceController,
+    curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
+  ));
 
   // Colors mapping
   Color get backgroundColor =>
@@ -314,10 +314,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                       secondaryTextColor: secondaryTextColor,
                       cardBorderColor: cardBorderColor,
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ClientDashboard(
+                            builder: (context) => MainShell(
                               isArabic: isArabic,
                               isDarkMode: isDarkMode,
                               onToggleLanguage: toggleLanguage,
@@ -481,8 +481,8 @@ class _RoleCardState extends State<RoleCard> {
                   color: _isHovered
                       ? const Color(0xFFD4A017).withOpacity(0.25)
                       : (widget.isDarkMode
-                          ? const Color(0xFFD4A017).withOpacity(0.03)
-                          : Colors.black.withOpacity(0.04)),
+                      ? const Color(0xFFD4A017).withOpacity(0.03)
+                      : Colors.black.withOpacity(0.04)),
                   blurRadius: _isHovered ? 25 : 15,
                   spreadRadius: _isHovered ? 1 : 0,
                   offset: _isHovered ? const Offset(0, 10) : const Offset(0, 6),
@@ -501,13 +501,13 @@ class _RoleCardState extends State<RoleCard> {
                       end: Alignment.bottomRight,
                       colors: widget.isDarkMode
                           ? [
-                              Colors.white.withOpacity(0.06),
-                              Colors.white.withOpacity(0.015),
-                            ]
+                        Colors.white.withOpacity(0.06),
+                        Colors.white.withOpacity(0.015),
+                      ]
                           : [
-                              Colors.black.withOpacity(0.03),
-                              Colors.black.withOpacity(0.005),
-                            ],
+                        Colors.black.withOpacity(0.03),
+                        Colors.black.withOpacity(0.005),
+                      ],
                     ),
                   ),
                   child: Row(

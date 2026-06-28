@@ -1,6 +1,4 @@
 import 'dart:ui';
-import 'product_details_page.dart';
-import 'artisan_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -45,13 +43,6 @@ class _ClientDashboardState extends State<ClientDashboard> {
     super.initState();
     isArabic = widget.isArabic;
     isDarkMode = widget.isDarkMode;
-  }
-
-  @override
-  void didUpdateWidget(covariant ClientDashboard old) {
-    super.didUpdateWidget(old);
-    if (old.isArabic != widget.isArabic) setState(() => isArabic = widget.isArabic);
-    if (old.isDarkMode != widget.isDarkMode) setState(() => isDarkMode = widget.isDarkMode);
   }
 
   // Colors mapping
@@ -888,24 +879,12 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       itemCount: craftsmen.length,
                       itemBuilder: (context, index) {
                         final maker = craftsmen[index];
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ArtisanProfilePage(
-                                artisan: maker,
-                                isArabic: isArabic,
-                                isDarkMode: isDarkMode,
-                              ),
-                            ),
-                          ),
-                          child: _buildCraftsmanCard(
-                            name: isArabic ? maker["nameAr"] : maker["nameEn"],
-                            craft: isArabic ? maker["craftAr"] : maker["craftEn"],
-                            rating: maker["rating"],
-                            jobs: maker["jobs"],
-                            imagePath: maker["image"],
-                          ),
+                        return _buildCraftsmanCard(
+                          name: isArabic ? maker["nameAr"] : maker["nameEn"],
+                          craft: isArabic ? maker["craftAr"] : maker["craftEn"],
+                          rating: maker["rating"],
+                          jobs: maker["jobs"],
+                          imagePath: maker["image"],
                         );
                       },
                     ),
@@ -950,19 +929,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
                     ),
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProductDetailsPage(
-                              product: product,
-                              isArabic: isArabic,
-                              isDarkMode: isDarkMode,
-                            ),
-                          ),
-                        ),
-                        child: _buildProductCard(product),
-                      );
+                      return _buildProductCard(product);
                     },
                   ),
                   const SizedBox(height: 20),

@@ -14,10 +14,7 @@ class CraftGoApp extends StatefulWidget {
 }
 
 class _CraftGoAppState extends State<CraftGoApp> {
-  // true = Arabic, false = English
   bool isArabic = true;
-
-  // true = Dark mode, false = Light mode
   bool isDarkMode = true;
 
   void toggleLanguage() {
@@ -36,8 +33,10 @@ class _CraftGoAppState extends State<CraftGoApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'CraftGo',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF0D1420),
+        useMaterial3: true,
       ),
       home: OnboardingScreen(
         isArabic: isArabic,
@@ -48,6 +47,8 @@ class _CraftGoAppState extends State<CraftGoApp> {
     );
   }
 }
+
+// ... rest of your OnboardingScreen code stays the same
 
 class OnboardingScreen extends StatefulWidget {
   final bool isArabic;
