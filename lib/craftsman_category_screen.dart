@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_registration_screen.dart';
+import 'add_craft_details_screen.dart';
 
 
 class CraftsmanCategoryScreen extends StatefulWidget {
@@ -9,6 +10,9 @@ class CraftsmanCategoryScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onToggleLanguage;
   final VoidCallback onToggleTheme;
+  /// When true, selecting a craft fires [onCraftAdded] instead of pushing registration.
+  final bool addCraftMode;
+  final void Function(Map<String, dynamic> category)? onCraftAdded;
 
   const CraftsmanCategoryScreen({
     super.key,
@@ -16,6 +20,8 @@ class CraftsmanCategoryScreen extends StatefulWidget {
     required this.isDarkMode,
     required this.onToggleLanguage,
     required this.onToggleTheme,
+    this.addCraftMode = false,
+    this.onCraftAdded,
   });
 
   @override
@@ -319,18 +325,39 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                         onPressed: selectedIndex != null
                             ? () {
                                 final selectedCat = categories[selectedIndex!];
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CraftsmanRegistrationScreen(
-                                      selectedCategory: selectedCat,
-                                      isArabic: isArabic,
-                                      isDarkMode: isDarkMode,
-                                      onToggleLanguage: toggleLanguage,
-                                      onToggleTheme: toggleTheme,
+                                if (widget.addCraftMode) {
+                                  // Push details screen first — then callback fires
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AddCraftDetailsScreen(
+                                        selectedCategory: selectedCat,
+                                        isArabic: isArabic,
+                                        isDarkMode: isDarkMode,
+                                        onToggleLanguage: toggleLanguage,
+                                        onToggleTheme: toggleTheme,
+                                        onConfirmed: (enriched) {
+                                          widget.onCraftAdded?.call(enriched);
+                                          // Pop this category screen too
+                                          Navigator.pop(context);
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CraftsmanRegistrationScreen(
+                                        selectedCategory: selectedCat,
+                                        isArabic: isArabic,
+                                        isDarkMode: isDarkMode,
+                                        onToggleLanguage: toggleLanguage,
+                                        onToggleTheme: toggleTheme,
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             : null,
                         child: Text(

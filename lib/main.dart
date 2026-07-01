@@ -302,10 +302,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   : TextDirection.ltr,
                               textAlign: TextAlign.center,
                               maxLines: 1,
-                              style: GoogleFonts.arefRuqaa(
+                              style: GoogleFonts.elMessiri(
                                 color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
                                 letterSpacing: 0.3,
                               ),
                             ),

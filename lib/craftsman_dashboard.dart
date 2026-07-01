@@ -327,7 +327,48 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 25),
+
+                  // Profile Completion Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: const Color(0xFFD4A017).withValues(alpha: 0.1),
+                      border: Border.all(color: const Color(0xFFD4A017).withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isArabic ? "اكتمال الملف الشخصي" : "Profile Completion",
+                              style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold),
+                            ),
+                            const Text("85%", style: TextStyle(color: Color(0xFFD4A017), fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: LinearProgressIndicator(
+                            value: 0.85,
+                            backgroundColor: const Color(0xFFD4A017).withValues(alpha: 0.2),
+                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD4A017)),
+                            minHeight: 8,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          isArabic ? "أضف رابط حسابك على إنستغرام لزيادة الموثوقية" : "Add your Instagram link to increase trust",
+                          style: TextStyle(color: secondaryTextColor, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
 
                   // Stats Panel (Glassmorphism row)
                   Container(
@@ -358,6 +399,12 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                           isArabic ? "الطلبات" : "Completed",
                           widget.isPending ? "0" : "24",
                           Icons.done_all_outlined,
+                        ),
+                        _buildStatDivider(),
+                        _buildStatItem(
+                          isArabic ? "المشاهدات" : "Views",
+                          widget.isPending ? "0" : "3.2K",
+                          Icons.remove_red_eye_outlined,
                         ),
                       ],
                     ),

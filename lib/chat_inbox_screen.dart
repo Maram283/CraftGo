@@ -122,7 +122,10 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
         final lastMsg = widget.isArabic
             ? chat['lastMessageAr'].toString().toLowerCase()
             : chat['lastMessageEn'].toString().toLowerCase();
-        return name.contains(query) || lastMsg.contains(query);
+        final orderTitle = widget.isArabic
+            ? chat['orderTitleAr'].toString().toLowerCase()
+            : chat['orderTitleEn'].toString().toLowerCase();
+        return name.contains(query) || lastMsg.contains(query) || orderTitle.contains(query);
       }).toList();
     }
     return list;
@@ -205,7 +208,7 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
                   onChanged: (value) => setState(() => _searchQuery = value),
                   style: TextStyle(color: primaryTextColor),
                   decoration: InputDecoration(
-                    hintText: t('ابحث في المحادثات...', 'Search conversations...'),
+                    hintText: t('ابحث عن رسالة، محادثة، أو طلب...', 'Search messages, chats, or orders...'),
                     hintStyle: TextStyle(color: secondaryTextColor.withValues(alpha: 0.5)),
                     prefixIcon: Icon(Icons.search, color: secondaryTextColor),
                     border: InputBorder.none,

@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_category_screen.dart';
-import 'admin_dashboard.dart';
+import 'admin_shell.dart';
 import 'customer_login_screen.dart';
 import 'main_shell.dart';
 
@@ -384,7 +384,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AdminDashboard(
+                            builder: (context) => AdminShell(
                               isArabic: isArabic,
                               isDarkMode: isDarkMode,
                               onToggleLanguage: toggleLanguage,
