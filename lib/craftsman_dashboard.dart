@@ -80,6 +80,19 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
     widget.onToggleTheme();
   }
 
+  /// Convert English digits to Eastern Arabic digits when isArabic is true
+  String localizeNumber(String value) {
+    if (!isArabic) return value;
+    const en = ['0','1','2','3','4','5','6','7','8','9'];
+    const ar = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    for (int i = 0; i < en.length; i++) {
+      value = value.replaceAll(en[i], ar[i]);
+    }
+    return value;
+  }
+
+  String t(String ar, String en) => isArabic ? ar : en;
+
   // Helper to map category to asset images in project
   List<String> getCategoryAssets() {
     if (widget.isPending) return [];
@@ -245,14 +258,10 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                             ),
                           ],
                         ),
-                        child: const CircleAvatar(
-                          backgroundColor: Color(0xFF1C2431),
-                          child: Icon(
-                            Icons.person_outline,
-                            size: 40,
-                            color: Color(0xFFD4A017),
-                          ),
-                        ),
+                         child: const CircleAvatar(
+                           backgroundColor: Color(0xFF1C2431),
+                           child: Icon(Icons.person, color: Color(0xFFD4A017), size: 36),
+                         ),
                       ),
                       const SizedBox(width: 16),
 
@@ -295,7 +304,9 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                                   Icon(Icons.workspace_premium_outlined, size: 14, color: secondaryTextColor),
                                   const SizedBox(width: 4),
                                   Text(
-                                    "${widget.experience} ${isArabic ? 'سنوات خبرة' : 'years exp'}",
+                                    widget.experience.contains('سنة') || widget.experience.contains('years')
+                                        ? localizeNumber(widget.experience)
+                                        : "${localizeNumber(widget.experience)} ${isArabic ? 'سنوات خبرة' : 'years exp'}",
                                     style: TextStyle(color: secondaryTextColor, fontSize: 12),
                                   ),
                                 ],
@@ -347,7 +358,7 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                               isArabic ? "اكتمال الملف الشخصي" : "Profile Completion",
                               style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold),
                             ),
-                            const Text("85%", style: TextStyle(color: Color(0xFFD4A017), fontWeight: FontWeight.bold)),
+                            Text(localizeNumber("85%"), style: const TextStyle(color: Color(0xFFD4A017), fontWeight: FontWeight.bold)),
                           ],
                         ),
                         const SizedBox(height: 10),

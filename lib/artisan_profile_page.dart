@@ -275,6 +275,149 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
     );
   }
 
+  void _showCustomOrderForm() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 24, left: 24, right: 24,
+          ),
+          decoration: BoxDecoration(
+            color: topButtonBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                t('طلب مخصص', 'Custom Order'),
+                style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                maxLines: 4,
+                style: TextStyle(color: primaryTextColor),
+                decoration: InputDecoration(
+                  hintText: t('اشرح التفاصيل التي تريدها...', 'Describe the details you want...'),
+                  hintStyle: TextStyle(color: secondaryTextColor),
+                  filled: true,
+                  fillColor: backgroundColor,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: _gold, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showSnack(t('تم إرسال طلبك المخصص بنجاح ✅', 'Custom order sent successfully ✅'));
+                  },
+                  child: Text(t('إرسال الطلب', 'Send Request'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showHireForm() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 24, left: 24, right: 24,
+          ),
+          decoration: BoxDecoration(
+            color: topButtonBackground,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                t('استئجار للعمل في الموقع', 'Hire for On-Site Work'),
+                style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      style: TextStyle(color: primaryTextColor),
+                      decoration: InputDecoration(
+                        labelText: t('التاريخ', 'Date'),
+                        labelStyle: TextStyle(color: secondaryTextColor),
+                        filled: true,
+                        fillColor: backgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        prefixIcon: Icon(Icons.calendar_today, color: _gold, size: 20),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      style: TextStyle(color: primaryTextColor),
+                      decoration: InputDecoration(
+                        labelText: t('المدة (أيام)', 'Duration (Days)'),
+                        labelStyle: TextStyle(color: secondaryTextColor),
+                        filled: true,
+                        fillColor: backgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        prefixIcon: Icon(Icons.timer, color: _gold, size: 20),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                style: TextStyle(color: primaryTextColor),
+                decoration: InputDecoration(
+                  labelText: t('الموقع (المدينة والشارع)', 'Location (City and Street)'),
+                  labelStyle: TextStyle(color: secondaryTextColor),
+                  filled: true,
+                  fillColor: backgroundColor,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  prefixIcon: Icon(Icons.location_on, color: _gold, size: 20),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: _gold, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showSnack(t('تم إرسال طلب التوظيف بنجاح ✅', 'Hire request sent successfully ✅'));
+                  },
+                  child: Text(t('طلب الحرفي للموقع', 'Request On-Site Artisan'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final a = widget.artisan;
@@ -302,7 +445,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 child: OutlinedButton.icon(
                   onPressed: widget.isGuest 
                       ? _showGuestPrompt 
-                      : () => _showSnack(t('فتح نموذج الطلب المخصص', 'Opening custom order form...')),
+                      : () => _showCustomOrderForm(),
                   icon: Icon(Icons.edit_outlined, size: 16, color: _gold),
                   label: Text(
                     t('طلب مخصص', 'Custom Order'),
@@ -321,7 +464,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 child: ElevatedButton.icon(
                   onPressed: widget.isGuest 
                       ? _showGuestPrompt 
-                      : () => _showSnack(t('فتح نموذج التوظيف', 'Opening hire form...')),
+                      : () => _showHireForm(),
                   icon: const Icon(Icons.handshake_outlined, size: 16, color: Colors.black),
                   label: Text(
                     t('استئجار / موقع', 'Hire / On-Site'),
@@ -521,6 +664,23 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                                     ),
                                   ),
                                 ],
+                              ),
+                              const SizedBox(height: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: _gold.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: _gold.withValues(alpha: 0.3)),
+                                ),
+                                child: Text(
+                                  t('يبدأ من 25 JOD', 'Starting from 25 JOD'),
+                                  style: GoogleFonts.cairo(
+                                    color: _gold,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -1626,4 +1786,4 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
-
+

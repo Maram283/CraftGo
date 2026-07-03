@@ -408,7 +408,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 t('الخصوصية', 'Privacy'),
                 style: TextStyle(color: primaryTextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                _showPrivacySheet();
+              },
             ),
             ListTile(
               leading: Icon(Icons.lock_outline, color: accent),
@@ -416,7 +419,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 t('تغيير كلمة المرور', 'Change Password'),
                 style: TextStyle(color: primaryTextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                _showChangePasswordDialog();
+              },
             ),
             const Divider(),
             // Logout
@@ -441,6 +447,148 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               style: TextStyle(color: accent),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog() {
+    final currentCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    bool obscure1 = true, obscure2 = true, obscure3 = true;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlg) => Directionality(
+          textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: AlertDialog(
+            backgroundColor: surfaceColor,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text(t('تغيير كلمة المرور', 'Change Password'),
+                style: GoogleFonts.cairo(color: primaryTextColor, fontWeight: FontWeight.bold)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _passField(currentCtrl, t('كلمة المرور الحالية', 'Current Password'), obscure1, () => setDlg(() => obscure1 = !obscure1)),
+                const SizedBox(height: 12),
+                _passField(newCtrl, t('كلمة المرور الجديدة', 'New Password'), obscure2, () => setDlg(() => obscure2 = !obscure2)),
+                const SizedBox(height: 12),
+                _passField(confirmCtrl, t('تأكيد كلمة المرور', 'Confirm Password'), obscure3, () => setDlg(() => obscure3 = !obscure3)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(t('إلغاء', 'Cancel'), style: TextStyle(color: secondaryTextColor)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: accent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text(t('تم تغيير كلمة المرور بنجاح ✅', 'Password changed successfully ✅'),
+                        style: GoogleFonts.cairo(color: Colors.white)),
+                  ));
+                },
+                child: Text(t('حفظ', 'Save'), style: GoogleFonts.cairo(color: Colors.black, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _passField(TextEditingController ctrl, String label, bool obscure, VoidCallback onToggle) {
+    return TextField(
+      controller: ctrl,
+      obscureText: obscure,
+      style: TextStyle(color: primaryTextColor),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: secondaryTextColor),
+        prefixIcon: Icon(Icons.lock_outline, color: secondaryTextColor),
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: secondaryTextColor, size: 20),
+          onPressed: onToggle,
+        ),
+        filled: true,
+        fillColor: cardBorderColor.withValues(alpha: 0.5),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: cardBorderColor)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: accent, width: 2)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    );
+  }
+
+  void _showPrivacySheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surfaceColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+      builder: (ctx) => Directionality(
+        textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: secondaryTextColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
+                const SizedBox(height: 16),
+                Text(t('سياسة الخصوصية', 'Privacy Policy'),
+                    style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _privacySection(
+                          t('جمع البيانات', 'Data Collection'),
+                          t('نجمع بياناتك فقط لتحسين تجربتك على التطبيق. لا نبيع بياناتك لأي جهة خارجية.', 'We collect your data only to improve your app experience. We never sell your data to third parties.'),
+                        ),
+                        _privacySection(
+                          t('الدفع والأمان', 'Payment & Security'),
+                          t('جميع المدفوعات محمية بنظام Escrow — لا يصل الحرفي مبلغه حتى تأكدك من استلام الخدمة.', 'All payments are protected by Escrow — the craftsman does not receive funds until you confirm service delivery.'),
+                        ),
+                        _privacySection(
+                          t('حذف الحساب', 'Account Deletion'),
+                          t('يمكنك طلب حذف حسابك وبياناتك في أي وقت عبر التواصل مع الدعم.', 'You can request account and data deletion at any time by contacting support.'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _privacySection(String title, String body) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(width: 4, height: 18, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(width: 8),
+              Text(title, style: GoogleFonts.cairo(color: primaryTextColor, fontWeight: FontWeight.bold, fontSize: 15)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(body, style: GoogleFonts.cairo(color: secondaryTextColor, fontSize: 13, height: 1.6)),
         ],
       ),
     );

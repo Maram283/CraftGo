@@ -498,6 +498,58 @@ class _MainShellState extends State<MainShell> {
                 border: _border,
                 onTap: _toggleTheme,
               ),
+              const SizedBox(width: 8),
+
+              // Guest Exit button
+              if (widget.isGuest)
+                _TextBtn(
+                  label: _isArabic ? 'خروج' : 'Exit',
+                  icon: Icons.exit_to_app_rounded,
+                  color: Colors.redAccent,
+                  surface: _surface,
+                  border: _border,
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CustomerLoginScreen(
+                          isArabic: _isArabic,
+                          isDarkMode: _isDarkMode,
+                          onToggleLanguage: _toggleLanguage,
+                          onToggleTheme: _toggleTheme,
+                          onLoginSuccess: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MainShell(
+                                  isArabic: _isArabic,
+                                  isDarkMode: _isDarkMode,
+                                  onToggleLanguage: _toggleLanguage,
+                                  onToggleTheme: _toggleTheme,
+                                  isGuest: false,
+                                ),
+                              ),
+                            );
+                          },
+                          onGuestAccess: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MainShell(
+                                  isArabic: _isArabic,
+                                  isDarkMode: _isDarkMode,
+                                  onToggleLanguage: _toggleLanguage,
+                                  onToggleTheme: _toggleTheme,
+                                  isGuest: true,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(width: 16),
             ],
             bottom: PreferredSize(

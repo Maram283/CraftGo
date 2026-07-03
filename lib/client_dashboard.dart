@@ -3,6 +3,7 @@ import 'product_details_page.dart';
 import 'artisan_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'search_results_screen.dart';
 
 class ClientDashboard extends StatefulWidget {
   final bool isArabic;
@@ -954,6 +955,20 @@ class _ClientDashboardState extends State<ClientDashboard> {
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                             ),
+                            onSubmitted: (query) {
+                              if (query.trim().isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => SearchResultsScreen(
+                                      isArabic: isArabic,
+                                      isDarkMode: isDarkMode,
+                                      query: query.trim(),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -1413,20 +1428,19 @@ class _ClientDashboardState extends State<ClientDashboard> {
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image container
-              Expanded(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Image.asset(imagePath, fit: BoxFit.cover),
-                ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image container with rounded top corners
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: SizedBox(
+                width: double.infinity,
+                child: Image.asset(imagePath, fit: BoxFit.cover),
               ),
+            ),
+          ),
 
               // Details
               Padding(
@@ -1487,8 +1501,6 @@ class _ClientDashboardState extends State<ClientDashboard> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 
