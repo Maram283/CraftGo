@@ -42,8 +42,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
   Color get secondaryTextColor =>
       widget.isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      widget.isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => widget.isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get surfaceColor =>
       widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white;
@@ -165,7 +166,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.shopping_cart_outlined, size: 64, color: secondaryTextColor.withOpacity(0.3)),
+            Icon(
+              Icons.shopping_cart_outlined,
+              size: 64,
+              color: secondaryTextColor.withValues(alpha: 0.3),
+            ),
             const SizedBox(height: 16),
             Text(
               t('سلة التسوق فارغة', 'Your cart is empty'),
@@ -176,7 +181,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
       );
     }
 
-    double total = cartItems.fold(0, (sum, item) => sum + (item['price'] as double) * (item['quantity'] as int));
+    double total = cartItems.fold(
+      0,
+      (sum, item) =>
+          sum + (item['price'] as double) * (item['quantity'] as int),
+    );
 
     return Column(
       children: [
@@ -249,7 +258,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                   },
                   child: Text(
                     t('إتمام الشراء', 'Checkout'),
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -260,7 +272,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
     );
   }
 
-  Widget _buildOrderList(List<Map<String, dynamic>> orders, {required bool isPending}) {
+  Widget _buildOrderList(
+    List<Map<String, dynamic>> orders, {
+    required bool isPending,
+  }) {
     if (orders.isEmpty) {
       return Center(
         child: Column(
@@ -269,7 +284,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
             Icon(
               isPending ? Icons.hourglass_empty : Icons.history,
               size: 64,
-              color: secondaryTextColor.withOpacity(0.3),
+              color: secondaryTextColor.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -318,7 +333,9 @@ class _CartItemCard extends StatelessWidget {
 
   Color get primaryText => isDarkMode ? Colors.white : Colors.black87;
   Color get secondaryText => isDarkMode ? Colors.white70 : Colors.black54;
-  Color get border => isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get border => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
   Color get surface => isDarkMode ? const Color(0xFF1C2431) : Colors.white;
   Color get accent => const Color(0xFFD4A017);
 
@@ -340,7 +357,7 @@ class _CartItemCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: accent.withOpacity(0.12),
+              color: accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(item['image'], size: 30, color: accent),
@@ -383,13 +400,20 @@ class _CartItemCard extends StatelessWidget {
                       child: Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.remove, size: 16, color: primaryText),
+                            icon: Icon(
+                              Icons.remove,
+                              size: 16,
+                              color: primaryText,
+                            ),
                             onPressed: () {
                               int qty = item['quantity'];
                               if (qty > 1) onQuantityChanged(qty - 1);
                             },
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                            constraints: const BoxConstraints(
+                              minWidth: 24,
+                              minHeight: 24,
+                            ),
                           ),
                           Text(
                             '${item['quantity']}',
@@ -406,7 +430,10 @@ class _CartItemCard extends StatelessWidget {
                               onQuantityChanged(qty + 1);
                             },
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                            constraints: const BoxConstraints(
+                              minWidth: 24,
+                              minHeight: 24,
+                            ),
                           ),
                         ],
                       ),
@@ -442,7 +469,9 @@ class _OrderCard extends StatelessWidget {
 
   Color get primaryText => isDarkMode ? Colors.white : Colors.black87;
   Color get secondaryText => isDarkMode ? Colors.white70 : Colors.black54;
-  Color get border => isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get border => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
   Color get surface => isDarkMode ? const Color(0xFF1C2431) : Colors.white;
   Color get accent => const Color(0xFFD4A017);
 
@@ -450,7 +479,11 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = isPending ? accent : (order['status'] == t('تم التسليم', 'Delivered') ? Colors.green : Colors.redAccent);
+    final statusColor = isPending
+        ? accent
+        : (order['status'] == t('تم التسليم', 'Delivered')
+              ? Colors.green
+              : Colors.redAccent);
 
     return InkWell(
       onTap: () {
@@ -466,82 +499,132 @@ class _OrderCard extends StatelessWidget {
         );
       },
       child: Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: accent.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(Icons.receipt_long, size: 24, color: accent),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  isArabic ? order['nameAr'] : order['nameEn'],
-                  style: TextStyle(
-                    color: primaryText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  child: Icon(Icons.receipt_long, size: 24, color: accent),
                 ),
-                Text(
-                  '${order['artisan']} • ${order['date']}',
-                  style: TextStyle(color: secondaryText, fontSize: 12),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        order['status'],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isArabic ? order['nameAr'] : order['nameEn'],
                         style: TextStyle(
-                          color: statusColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
+                          color: primaryText,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${order['price'].toStringAsFixed(2)} JOD',
-                      style: TextStyle(
-                        color: accent,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        '${order['artisan']} • ${order['date']}',
+                        style: TextStyle(color: secondaryText, fontSize: 12),
                       ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              order['status'],
+                              style: TextStyle(
+                                color: statusColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${order['price'].toStringAsFixed(2)} JOD',
+                            style: TextStyle(
+                              color: accent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (isPending)
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: secondaryText,
+                    ),
+                    onPressed: () {
+                      // Navigate to order tracking
+                    },
+                  ),
+              ],
+            ),
+            // AI Delivery Estimator (only for pending orders)
+            if (isPending)
+              Container(
+                margin: const EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.access_time, color: Colors.teal, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isArabic ? '🤖 التوصيل المتوقع بالذكاء الاصطناعي' : '🤖 AI Delivery Estimate',
+                            style: GoogleFonts.cairo(color: Colors.teal, fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            isArabic ? 'الغد، 2:00 - 4:00 مساءً (دقة 94%)' : 'Tomorrow, 2:00 - 4:00 PM (94% accuracy)',
+                            style: GoogleFonts.cairo(color: isDarkMode ? Colors.white : Colors.black87, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: Colors.teal, borderRadius: BorderRadius.circular(8)),
+                      child: Text('94%', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          if (isPending)
-            IconButton(
-              icon: Icon(Icons.arrow_forward_ios, size: 16, color: secondaryText),
-              onPressed: () {
-                // Navigate to order tracking
-              },
-            ),
-        ],
+              ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

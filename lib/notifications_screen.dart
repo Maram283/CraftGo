@@ -32,10 +32,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   String t(String ar, String en) => widget.isArabic ? ar : en;
 
+  bool _aiSorted = false;
+
   final List<Map<String, dynamic>> _todayNotifications = [
+    {
+      'id': '0',
+      'type': 'ai_suggestion',
+      'priority': 'low',
+      'titleAr': '💡 اقتراح AI',
+      'titleEn': '💡 AI Suggestion',
+      'bodyAr': 'حرفي جديد في منطقتك قد يعجبك: فاطمة - تطريز ورسم',
+      'bodyEn': 'New artisan near you: Fatima - Embroidery & Art',
+      'time': 'الآن',
+      'timeEn': 'Just now',
+      'unread': true,
+      'isAI': true,
+    },
     {
       'id': '1',
       'type': 'order', // order, message, payment, system
+      'priority': 'high',
       'titleAr': 'طلب جديد!',
       'titleEn': 'New Order!',
       'bodyAr': 'لقد تلقيت طلباً جديداً من محمد لخدمة النجارة.',
@@ -47,6 +63,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     {
       'id': '2',
       'type': 'message',
+      'priority': 'medium',
       'titleAr': 'رسالة جديدة',
       'titleEn': 'New Message',
       'bodyAr': 'سارة أرسلت لك رسالة بخصوص طلب الدهان.',
@@ -61,6 +78,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     {
       'id': '3',
       'type': 'payment',
+      'priority': 'high',
       'titleAr': 'دفعة مستلمة',
       'titleEn': 'Payment Received',
       'bodyAr': 'تم استلام دفعة بقيمة 50 دينار في محفظتك.',
@@ -72,6 +90,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     {
       'id': '4',
       'type': 'system',
+      'priority': 'low',
       'titleAr': 'تحديث التطبيق',
       'titleEn': 'App Update',
       'bodyAr': 'نسخة جديدة من كرافت جو متوفرة الآن بميزات جديدة.',
@@ -88,6 +107,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'message': return Icons.chat_bubble_outline;
       case 'payment': return Icons.account_balance_wallet_outlined;
       case 'system': return Icons.info_outline;
+      case 'ai_suggestion': return Icons.auto_awesome;
       default: return Icons.notifications_none;
     }
   }
@@ -98,7 +118,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'message': return Colors.green;
       case 'payment': return accent;
       case 'system': return dim;
+      case 'ai_suggestion': return Colors.purpleAccent;
       default: return accent;
+    }
+  }
+
+  Color _getAIPriorityColor(String priority) {
+    switch (priority) {
+      case 'high': return Colors.redAccent;
+      case 'medium': return Colors.amber;
+      case 'low': return Colors.blue;
+      default: return Colors.grey;
+    }
+  }
+
+  String _getAIPriorityLabel(String priority, bool isArabic) {
+    switch (priority) {
+      case 'high': return isArabic ? '🔴 حرج' : '🔴 Critical';
+      case 'medium': return isArabic ? '🟡 متوسط' : '🟡 Medium';
+      case 'low': return isArabic ? '🔵 اقتراح' : '🔵 Suggestion';
+      default: return '';
     }
   }
 
@@ -121,7 +160,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEmpty = _todayNotifications.isEmpty && _yesterdayNotifications.isEmpty;
+    // Only filter out AI suggestion if not active
+    final todayList = _aiSorted ? _todayNotifications : _todayNotifications.where((n) => n['isAI'] != true).toList();
+    final isEmpty = todayList.isEmpty && _yesterdayNotifications.isEmpty;
 
     return Directionality(
       textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -140,6 +181,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           centerTitle: true,
           actions: [
+            IconButton(
+              icon: Icon(Icons.auto_awesome, color: _aiSorted ? Colors.purpleAccent : dim),
+              onPressed: () => setState(() => _aiSorted = !_aiSorted),
+            ),
             if (!isEmpty)
               IconButton(
                 icon: Icon(Icons.done_all, color: accent),
@@ -148,7 +193,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
           ],
         ),
-        body: isEmpty ? _buildEmptyState() : _buildList(),
+        body: isEmpty ? _buildEmptyState() : _buildList(todayList),
       ),
     );
   }
@@ -181,12 +226,34 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _buildList() {
+  Widget _buildList(List<Map<String, dynamic>> todayList) {
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
-        if (_todayNotifications.isNotEmpty) ...[
+        if (_aiSorted)
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.purpleAccent.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    t('تم ترتيب الإشعارات حسب أهميتها بالذكاء الاصطناعي 🤖', 'Notifications sorted by AI priority 🤖'),
+                    style: GoogleFonts.cairo(color: Colors.purpleAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (todayList.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Text(
@@ -195,8 +262,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ),
           ...List.generate(
-            _todayNotifications.length,
-            (index) => _buildNotificationTile(_todayNotifications, index),
+            todayList.length,
+            (index) => _buildNotificationTile(todayList, index),
           ),
         ],
         if (_yesterdayNotifications.isNotEmpty) ...[
@@ -276,6 +343,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ],
                     ),
+                    if (_aiSorted && n['priority'] != null)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4, bottom: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: _getAIPriorityColor(n['priority']).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _getAIPriorityLabel(n['priority'], widget.isArabic),
+                          style: GoogleFonts.cairo(
+                            color: _getAIPriorityColor(n['priority']),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 4),
                     Text(
                       t(n['bodyAr'], n['bodyEn']),

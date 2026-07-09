@@ -42,7 +42,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
     isArabic = widget.isArabic;
     isDarkMode = widget.isDarkMode;
     _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() => setState(() => _productTab = _tabController.index));
+    _tabController.addListener(
+      () => setState(() => _productTab = _tabController.index),
+    );
   }
 
   @override
@@ -57,11 +59,11 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
 
   Color get primaryTextColor => isDarkMode ? Colors.white : Colors.black87;
 
-  Color get secondaryTextColor =>
-      isDarkMode ? Colors.white70 : Colors.black54;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get topButtonBackground =>
       isDarkMode ? const Color(0xFF1C2431) : Colors.white;
@@ -77,24 +79,54 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
       "tabAr": "كل الأعمال",
       "tabEn": "All",
       "items": [
-        {"nameAr": "وشاح صوف", "nameEn": "Wool Scarf", "price": 22.0, "icon": Icons.checkroom_outlined},
-        {"nameAr": "سجادة مطرزة", "nameEn": "Embroidered Rug", "price": 52.0, "icon": Icons.grid_on_outlined},
-        {"nameAr": "مفرش طاولة", "nameEn": "Table Runner", "price": 35.0, "icon": Icons.table_restaurant_outlined},
+        {
+          "nameAr": "وشاح صوف",
+          "nameEn": "Wool Scarf",
+          "price": 22.0,
+          "icon": Icons.checkroom_outlined,
+        },
+        {
+          "nameAr": "سجادة مطرزة",
+          "nameEn": "Embroidered Rug",
+          "price": 52.0,
+          "icon": Icons.grid_on_outlined,
+        },
+        {
+          "nameAr": "مفرش طاولة",
+          "nameEn": "Table Runner",
+          "price": 35.0,
+          "icon": Icons.table_restaurant_outlined,
+        },
       ],
     },
     {
       "tabAr": "تطريز",
       "tabEn": "Embroidery",
       "items": [
-        {"nameAr": "وشاح صوف", "nameEn": "Wool Scarf", "price": 22.0, "icon": Icons.checkroom_outlined},
-        {"nameAr": "سجادة مطرزة", "nameEn": "Embroidered Rug", "price": 52.0, "icon": Icons.grid_on_outlined},
+        {
+          "nameAr": "وشاح صوف",
+          "nameEn": "Wool Scarf",
+          "price": 22.0,
+          "icon": Icons.checkroom_outlined,
+        },
+        {
+          "nameAr": "سجادة مطرزة",
+          "nameEn": "Embroidered Rug",
+          "price": 52.0,
+          "icon": Icons.grid_on_outlined,
+        },
       ],
     },
     {
       "tabAr": "منسوجات",
       "tabEn": "Textiles",
       "items": [
-        {"nameAr": "مفرش طاولة", "nameEn": "Table Runner", "price": 35.0, "icon": Icons.table_restaurant_outlined},
+        {
+          "nameAr": "مفرش طاولة",
+          "nameEn": "Table Runner",
+          "price": 35.0,
+          "icon": Icons.table_restaurant_outlined,
+        },
       ],
     },
   ];
@@ -121,9 +153,27 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
 
   // ── Reviews ──────────────────────────────────────────────────────────────
   final List<Map<String, dynamic>> _reviews = [
-    {"nameAr": "أحمد ناصر", "nameEn": "Ahmad Naser", "rating": 5, "commentAr": "جودة رائعة وتوصيل سريع، ينصح به بشدة!", "commentEn": "Excellent quality and fast delivery, highly recommended!"},
-    {"nameAr": "سارة العلي", "nameEn": "Sara Al-Ali", "rating": 4, "commentAr": "عمل جميل جداً، التواصل كان ممتازاً.", "commentEn": "Very beautiful work, communication was excellent."},
-    {"nameAr": "محمود حسن", "nameEn": "Mahmoud Hassan", "rating": 5, "commentAr": "تجاوز توقعاتي، شكراً جزيلاً!", "commentEn": "Exceeded my expectations, thank you so much!"},
+    {
+      "nameAr": "أحمد ناصر",
+      "nameEn": "Ahmad Naser",
+      "rating": 5,
+      "commentAr": "جودة رائعة وتوصيل سريع، ينصح به بشدة!",
+      "commentEn": "Excellent quality and fast delivery, highly recommended!",
+    },
+    {
+      "nameAr": "سارة العلي",
+      "nameEn": "Sara Al-Ali",
+      "rating": 4,
+      "commentAr": "عمل جميل جداً، التواصل كان ممتازاً.",
+      "commentEn": "Very beautiful work, communication was excellent.",
+    },
+    {
+      "nameAr": "محمود حسن",
+      "nameEn": "Mahmoud Hassan",
+      "rating": 5,
+      "commentAr": "تجاوز توقعاتي، شكراً جزيلاً!",
+      "commentEn": "Exceeded my expectations, thank you so much!",
+    },
   ];
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -140,10 +190,12 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
   /// Returns the event that matches the given date, or null.
   Map<String, dynamic>? _getEventForDate(DateTime date) {
     try {
-      return _events.firstWhere((e) =>
-      e["date"].year == date.year &&
-          e["date"].month == date.month &&
-          e["date"].day == date.day);
+      return _events.firstWhere(
+        (e) =>
+            e["date"].year == date.year &&
+            e["date"].month == date.month &&
+            e["date"].day == date.day,
+      );
     } catch (_) {
       return null;
     }
@@ -162,7 +214,10 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
         backgroundColor: topButtonBackground,
         title: Text(
           t(event["titleAr"], event["titleEn"]),
-          style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: primaryTextColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -212,7 +267,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
           decoration: BoxDecoration(
             color: widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            border: Border.all(color: widget.isDarkMode ? Colors.white12 : Colors.black12),
+            border: Border.all(
+              color: widget.isDarkMode ? Colors.white12 : Colors.black12,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -222,9 +279,13 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFD4A017).withOpacity(0.15),
+                  color: const Color(0xFFD4A017).withValues(alpha: 0.15),
                 ),
-                child: const Icon(Icons.lock_outline, color: Color(0xFFD4A017), size: 30),
+                child: const Icon(
+                  Icons.lock_outline,
+                  color: Color(0xFFD4A017),
+                  size: 30,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
@@ -254,7 +315,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD4A017),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27),
+                    ),
                   ),
                   onPressed: () => Navigator.pop(context),
                   child: Text(
@@ -284,7 +347,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
         return Container(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            top: 24, left: 24, right: 24,
+            top: 24,
+            left: 24,
+            right: 24,
           ),
           decoration: BoxDecoration(
             color: topButtonBackground,
@@ -296,18 +361,28 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
             children: [
               Text(
                 t('طلب مخصص', 'Custom Order'),
-                style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.cairo(
+                  color: primaryTextColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 maxLines: 4,
                 style: TextStyle(color: primaryTextColor),
                 decoration: InputDecoration(
-                  hintText: t('اشرح التفاصيل التي تريدها...', 'Describe the details you want...'),
+                  hintText: t(
+                    'اشرح التفاصيل التي تريدها...',
+                    'Describe the details you want...',
+                  ),
                   hintStyle: TextStyle(color: secondaryTextColor),
                   filled: true,
                   fillColor: backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -315,12 +390,28 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: _gold, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _gold,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
-                    _showSnack(t('تم إرسال طلبك المخصص بنجاح ✅', 'Custom order sent successfully ✅'));
+                    _showSnack(
+                      t(
+                        'تم إرسال طلبك المخصص بنجاح ✅',
+                        'Custom order sent successfully ✅',
+                      ),
+                    );
                   },
-                  child: Text(t('إرسال الطلب', 'Send Request'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    t('إرسال الطلب', 'Send Request'),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -339,7 +430,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
         return Container(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            top: 24, left: 24, right: 24,
+            top: 24,
+            left: 24,
+            right: 24,
           ),
           decoration: BoxDecoration(
             color: topButtonBackground,
@@ -351,7 +444,11 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
             children: [
               Text(
                 t('استئجار للعمل في الموقع', 'Hire for On-Site Work'),
-                style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.cairo(
+                  color: primaryTextColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -364,8 +461,15 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                         labelStyle: TextStyle(color: secondaryTextColor),
                         filled: true,
                         fillColor: backgroundColor,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                        prefixIcon: Icon(Icons.calendar_today, color: _gold, size: 20),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.calendar_today,
+                          color: _gold,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -378,7 +482,10 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                         labelStyle: TextStyle(color: secondaryTextColor),
                         filled: true,
                         fillColor: backgroundColor,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                         prefixIcon: Icon(Icons.timer, color: _gold, size: 20),
                       ),
                       keyboardType: TextInputType.number,
@@ -390,11 +497,17 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
               TextField(
                 style: TextStyle(color: primaryTextColor),
                 decoration: InputDecoration(
-                  labelText: t('الموقع (المدينة والشارع)', 'Location (City and Street)'),
+                  labelText: t(
+                    'الموقع (المدينة والشارع)',
+                    'Location (City and Street)',
+                  ),
                   labelStyle: TextStyle(color: secondaryTextColor),
                   filled: true,
                   fillColor: backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                   prefixIcon: Icon(Icons.location_on, color: _gold, size: 20),
                 ),
               ),
@@ -403,12 +516,28 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: _gold, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _gold,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
-                    _showSnack(t('تم إرسال طلب التوظيف بنجاح ✅', 'Hire request sent successfully ✅'));
+                    _showSnack(
+                      t(
+                        'تم إرسال طلب التوظيف بنجاح ✅',
+                        'Hire request sent successfully ✅',
+                      ),
+                    );
                   },
-                  child: Text(t('طلب الحرفي للموقع', 'Request On-Site Artisan'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    t('طلب الحرفي للموقع', 'Request On-Site Artisan'),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -443,18 +572,24 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: widget.isGuest 
-                      ? _showGuestPrompt 
+                  onPressed: widget.isGuest
+                      ? _showGuestPrompt
                       : () => _showCustomOrderForm(),
                   icon: Icon(Icons.edit_outlined, size: 16, color: _gold),
                   label: Text(
                     t('طلب مخصص', 'Custom Order'),
-                    style: TextStyle(color: _gold, fontWeight: FontWeight.w700, fontSize: 13),
+                    style: TextStyle(
+                      color: _gold,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(color: _gold),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     backgroundColor: Colors.transparent,
                   ),
                 ),
@@ -462,18 +597,28 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: widget.isGuest 
-                      ? _showGuestPrompt 
+                  onPressed: widget.isGuest
+                      ? _showGuestPrompt
                       : () => _showHireForm(),
-                  icon: const Icon(Icons.handshake_outlined, size: 16, color: Colors.black),
+                  icon: const Icon(
+                    Icons.handshake_outlined,
+                    size: 16,
+                    color: Colors.black,
+                  ),
                   label: Text(
                     t('استئجار / موقع', 'Hire / On-Site'),
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 13),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _gold,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -507,8 +652,14 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                     setState(() => _isFavorite = !_isFavorite);
                     _showSnack(
                       _isFavorite
-                          ? t('تمت الإضافة إلى المفضلة ❤️', 'Added to Favorites ❤️')
-                          : t('تمت الإزالة من المفضلة', 'Removed from Favorites'),
+                          ? t(
+                              'تمت الإضافة إلى المفضلة ❤️',
+                              'Added to Favorites ❤️',
+                            )
+                          : t(
+                              'تمت الإزالة من المفضلة',
+                              'Removed from Favorites',
+                            ),
                     );
                   },
                   child: AnimatedContainer(
@@ -530,16 +681,22 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                       boxShadow: _isFavorite
                           ? [
                               BoxShadow(
-                                color: const Color(0xFFE53935).withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFFE53935,
+                                ).withValues(alpha: 0.3),
                                 blurRadius: 10,
                                 spreadRadius: 1,
-                              )
+                              ),
                             ]
                           : [],
                     ),
                     child: Icon(
-                      _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: _isFavorite ? const Color(0xFFE53935) : primaryTextColor,
+                      _isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: _isFavorite
+                          ? const Color(0xFFE53935)
+                          : primaryTextColor,
                       size: 20,
                     ),
                   ),
@@ -585,31 +742,37 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isDarkMode ? const Color(0xFF0D1420) : Colors.white,
+                              color: isDarkMode
+                                  ? const Color(0xFF0D1420)
+                                  : Colors.white,
                               width: 4,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 12,
                               ),
                             ],
                           ),
                           child: CircleAvatar(
                             radius: 42,
-                            backgroundColor: _gold.withOpacity(0.2),
-                            backgroundImage: (a["image"] != null && (a["image"] as String).isNotEmpty)
+                            backgroundColor: _gold.withValues(alpha: 0.2),
+                            backgroundImage:
+                                (a["image"] != null &&
+                                    (a["image"] as String).isNotEmpty)
                                 ? AssetImage(a["image"] as String)
                                 : null,
-                            child: (a["image"] == null || (a["image"] as String).isEmpty)
+                            child:
+                                (a["image"] == null ||
+                                    (a["image"] as String).isEmpty)
                                 ? Text(
-                              name.isNotEmpty ? name[0] : '?',
-                              style: TextStyle(
-                                fontSize: 28,
-                                color: _gold,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
+                                    name.isNotEmpty ? name[0] : '?',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      color: _gold,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
                                 : null,
                           ),
                         ),
@@ -667,11 +830,16 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                               ),
                               const SizedBox(height: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: _gold.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: _gold.withValues(alpha: 0.3)),
+                                  border: Border.all(
+                                    color: _gold.withValues(alpha: 0.3),
+                                  ),
                                 ),
                                 child: Text(
                                   t('يبدأ من 25 JOD', 'Starting from 25 JOD'),
@@ -706,9 +874,10 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                             border: cardBorderColor,
                             surface: topButtonBackground,
                             text: primaryTextColor,
-                            onTap: widget.isGuest 
-                                ? _showGuestPrompt 
-                                : () => setState(() => _following = !_following),
+                            onTap: widget.isGuest
+                                ? _showGuestPrompt
+                                : () =>
+                                      setState(() => _following = !_following),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -721,9 +890,11 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                             border: cardBorderColor,
                             surface: topButtonBackground,
                             text: primaryTextColor,
-                            onTap: widget.isGuest 
-                                ? _showGuestPrompt 
-                                : () => _showSnack(t('فتح المحادثة...', 'Opening chat...')),
+                            onTap: widget.isGuest
+                                ? _showGuestPrompt
+                                : () => _showSnack(
+                                    t('فتح المحادثة...', 'Opening chat...'),
+                                  ),
                           ),
                         ),
                       ],
@@ -792,6 +963,132 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                         color: secondaryTextColor,
                         fontSize: 13.5,
                         height: 1.65,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // ── AI Review Analyzer ───────────────────────────────
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.purpleAccent.withValues(alpha: 0.06),
+                            const Color(0xFFD4A017).withValues(alpha: 0.04),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.25)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.purpleAccent.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 16),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                t('🤖 ما يقوله الزبائن (تحليل AI)', '🤖 Customer Insights (AI Analysis)'),
+                                style: GoogleFonts.cairo(color: Colors.purpleAccent, fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          // Strengths
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle),
+                                child: const Icon(Icons.thumb_up_outlined, color: Colors.green, size: 14),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t('نقاط القوة', 'Strengths'),
+                                      style: GoogleFonts.cairo(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      t('دقة في التفاصيل، تسليم سريع، تواصل ممتاز', 'Attention to detail, fast delivery, great communication'),
+                                      style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 12, height: 1.4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Observations
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.1), shape: BoxShape.circle),
+                                child: const Icon(Icons.info_outline, color: Colors.amber, size: 14),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t('ملاحظات', 'Observations'),
+                                      style: GoogleFonts.cairo(color: Colors.amber, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      t('بعض الزبائن يذكرون أن الألوان قد تختلف أحياناً عن الصورة', 'Some customers mention colors may slightly differ from photos'),
+                                      style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 12, height: 1.4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Tip for buyer
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD4A017).withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.lightbulb_outline, color: Color(0xFFD4A017), size: 14),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    t('💡 نصيحة: اطلب صور إضافية للمنتج قبل الشراء لضمان الرضا الكامل', '💡 Tip: Request additional product photos before purchasing for full satisfaction'),
+                                    style: GoogleFonts.cairo(color: secondaryTextColor, fontSize: 11, height: 1.4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          // Rating breakdown
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _aiRatingBar(t('الجودة', 'Quality'), 0.95, Colors.green),
+                              _aiRatingBar(t('التواصل', 'Communication'), 0.90, Colors.blue),
+                              _aiRatingBar(t('التسليم', 'Delivery'), 0.88, Colors.teal),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
 
@@ -913,7 +1210,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: _productGroups.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
                         itemBuilder: (_, i) {
                           final sel = i == _productTab;
                           return GestureDetector(
@@ -923,7 +1220,9 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 180),
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               decoration: BoxDecoration(
                                 color: sel ? _gold : topButtonBackground,
                                 borderRadius: BorderRadius.circular(18),
@@ -933,7 +1232,10 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                t(_productGroups[i]["tabAr"], _productGroups[i]["tabEn"]),
+                                t(
+                                  _productGroups[i]["tabAr"],
+                                  _productGroups[i]["tabEn"],
+                                ),
                                 style: TextStyle(
                                   color: sel ? Colors.black : primaryTextColor,
                                   fontSize: 12.5,
@@ -953,10 +1255,13 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: (_productGroups[_productTab]["items"] as List).length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemCount:
+                            (_productGroups[_productTab]["items"] as List)
+                                .length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 12),
                         itemBuilder: (_, i) {
-                          final item = (_productGroups[_productTab]["items"] as List)[i];
+                          final item =
+                              (_productGroups[_productTab]["items"] as List)[i];
                           return _ProductCard(
                             nameAr: item["nameAr"],
                             nameEn: item["nameEn"],
@@ -1010,25 +1315,30 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                     if (_events.isEmpty)
                       Text(
                         t('لا توجد فعاليات قادمة', 'No upcoming events'),
-                        style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                        style: TextStyle(
+                          color: secondaryTextColor,
+                          fontSize: 13,
+                        ),
                       )
                     else
-                      ..._events.take(2).map(
+                      ..._events
+                          .take(2)
+                          .map(
                             (e) => _EventTile(
-                          titleAr: e["titleAr"],
-                          titleEn: e["titleEn"],
-                          date: e["date"],
-                          locationAr: e["locationAr"],
-                          locationEn: e["locationEn"],
-                          isArabic: isArabic,
-                          accent: _gold,
-                          surface: topButtonBackground,
-                          border: cardBorderColor,
-                          text: primaryTextColor,
-                          dim: secondaryTextColor,
-                          onTap: () => _showEventDetails(e["date"]),
-                        ),
-                      ),
+                              titleAr: e["titleAr"],
+                              titleEn: e["titleEn"],
+                              date: e["date"],
+                              locationAr: e["locationAr"],
+                              locationEn: e["locationEn"],
+                              isArabic: isArabic,
+                              accent: _gold,
+                              surface: topButtonBackground,
+                              border: cardBorderColor,
+                              text: primaryTextColor,
+                              dim: secondaryTextColor,
+                              onTap: () => _showEventDetails(e["date"]),
+                            ),
+                          ),
 
                     const SizedBox(height: 24),
 
@@ -1073,7 +1383,7 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                     ),
                     const SizedBox(height: 12),
                     ..._reviews.map(
-                          (r) => _ReviewCard(
+                      (r) => _ReviewCard(
                         nameAr: r["nameAr"],
                         nameEn: r["nameEn"],
                         rating: r["rating"],
@@ -1087,7 +1397,6 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
                         dim: secondaryTextColor,
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -1095,6 +1404,34 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _aiRatingBar(String label, double value, Color color) {
+    return Column(
+      children: [
+        Text(label, style: GoogleFonts.cairo(color: secondaryTextColor, fontSize: 9)),
+        const SizedBox(height: 4),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: CircularProgressIndicator(
+                value: value,
+                backgroundColor: cardBorderColor,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                strokeWidth: 5,
+              ),
+            ),
+            Text(
+              '${(value * 100).toInt()}%',
+              style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 9, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -1152,12 +1489,15 @@ class _EventCalendarState extends State<_EventCalendar> {
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   bool _hasEvent(DateTime date) {
-    return widget.eventDates.any((e) =>
-    e.year == date.year && e.month == date.month && e.day == date.day);
+    return widget.eventDates.any(
+      (e) => e.year == date.year && e.month == date.month && e.day == date.day,
+    );
   }
 
   @override
@@ -1168,8 +1508,16 @@ class _EventCalendarState extends State<_EventCalendar> {
     final year = _currentMonth.year;
 
     // Build days grid
-    final daysInMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day;
-    final firstDayOfMonth = DateTime(_currentMonth.year, _currentMonth.month, 1);
+    final daysInMonth = DateTime(
+      _currentMonth.year,
+      _currentMonth.month + 1,
+      0,
+    ).day;
+    final firstDayOfMonth = DateTime(
+      _currentMonth.year,
+      _currentMonth.month,
+      1,
+    );
     final startWeekday = firstDayOfMonth.weekday; // 1=Monday, 7=Sunday
 
     // Offset for first day (Monday=0)
@@ -1193,8 +1541,8 @@ class _EventCalendarState extends State<_EventCalendar> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isToday
-                  ? widget.todayColor.withOpacity(0.15)
-                  : (hasEvent ? widget.accent.withOpacity(0.10) : null),
+                  ? widget.todayColor.withValues(alpha: 0.15)
+                  : (hasEvent ? widget.accent.withValues(alpha: 0.10) : null),
               border: isToday
                   ? Border.all(color: widget.todayColor, width: 2)
                   : null,
@@ -1207,7 +1555,9 @@ class _EventCalendarState extends State<_EventCalendar> {
                   style: TextStyle(
                     color: isToday ? widget.todayColor : widget.textColor,
                     fontSize: 14,
-                    fontWeight: isToday || hasEvent ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isToday || hasEvent
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
                 if (hasEvent)
@@ -1242,7 +1592,11 @@ class _EventCalendarState extends State<_EventCalendar> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(Icons.arrow_back_ios, size: 16, color: widget.textColor),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  size: 16,
+                  color: widget.textColor,
+                ),
                 onPressed: _prevMonth,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -1256,7 +1610,11 @@ class _EventCalendarState extends State<_EventCalendar> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.arrow_forward_ios, size: 16, color: widget.textColor),
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: widget.textColor,
+                ),
                 onPressed: _nextMonth,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -1272,13 +1630,31 @@ class _EventCalendarState extends State<_EventCalendar> {
             childAspectRatio: 1.2,
             children: widget.isArabic
                 ? ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س']
-                .map((e) => Center(
-                child: Text(e, style: TextStyle(color: widget.textColor.withOpacity(0.6), fontSize: 12))))
-                .toList()
+                      .map(
+                        (e) => Center(
+                          child: Text(
+                            e,
+                            style: TextStyle(
+                              color: widget.textColor.withValues(alpha: 0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList()
                 : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                .map((e) => Center(
-                child: Text(e, style: TextStyle(color: widget.textColor.withOpacity(0.6), fontSize: 12))))
-                .toList(),
+                      .map(
+                        (e) => Center(
+                          child: Text(
+                            e,
+                            style: TextStyle(
+                              color: widget.textColor.withValues(alpha: 0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
           ),
           const SizedBox(height: 4),
           // Days grid
@@ -1295,13 +1671,33 @@ class _EventCalendarState extends State<_EventCalendar> {
   }
 
   static const _englishMonths = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   static const _arabicMonths = [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
   ];
 }
 
@@ -1559,10 +1955,12 @@ class _ProductCard extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.10),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                color: accent.withValues(alpha: 0.10),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
-              child: Icon(icon, size: 36, color: accent.withOpacity(0.6)),
+              child: Icon(icon, size: 36, color: accent.withValues(alpha: 0.6)),
             ),
           ),
           Padding(
@@ -1639,7 +2037,7 @@ class _EventTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.12),
+                color: accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(Icons.event_rounded, color: accent, size: 22),
@@ -1681,7 +2079,7 @@ class _EventTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.12),
+                color: accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -1737,7 +2135,7 @@ class _ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: accent.withOpacity(0.2),
+                backgroundColor: accent.withValues(alpha: 0.2),
                 child: Text(
                   (isArabic ? nameAr : nameEn)[0],
                   style: TextStyle(
@@ -1766,7 +2164,7 @@ class _ReviewCard extends StatelessWidget {
                     size: 13,
                     color: i < rating
                         ? const Color(0xFFF7B500)
-                        : Colors.grey.withOpacity(0.3),
+                        : Colors.grey.withValues(alpha: 0.3),
                   ),
                 ),
               ),
@@ -1775,15 +2173,10 @@ class _ReviewCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             isArabic ? commentAr : commentEn,
-            style: TextStyle(
-              color: dim,
-              fontSize: 13,
-              height: 1.5,
-            ),
+            style: TextStyle(color: dim, fontSize: 13, height: 1.5),
           ),
         ],
       ),
     );
   }
 }
-

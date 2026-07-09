@@ -754,9 +754,7 @@ class _CraftsmanRegistrationScreenState
           icon: Icons.badge_outlined,
           isUploaded: _isIdUploaded,
           isOptional: true,
-          onTap: () {
-            setState(() => _isIdUploaded = true);
-          },
+          onTap: _startAIVerification,
         ),
         const SizedBox(height: 15),
         _buildUploadButton(
@@ -771,6 +769,87 @@ class _CraftsmanRegistrationScreenState
         ),
       ],
     );
+  }
+
+  void _startAIVerification() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: inputFillColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.document_scanner, size: 48, color: Color(0xFFD4A017)),
+                const SizedBox(height: 16),
+                Text(
+                  isArabic ? "الذكاء الاصطناعي يتحقق من الهوية..." : "AI is verifying ID...",
+                  style: TextStyle(color: primaryTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(color: Color(0xFFD4A017)),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      Navigator.pop(context); // close scanning dialog
+      
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: inputFillColor,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.verified_user, size: 64, color: Colors.green),
+                  const SizedBox(height: 16),
+                  Text(
+                    isArabic ? "تم التحقق بنجاح!" : "Verified Successfully!",
+                    style: TextStyle(color: primaryTextColor, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isArabic 
+                        ? "دقة التطابق: 98%\nتم توثيق الهوية عبر الذكاء الاصطناعي وتقليل وقت المراجعة." 
+                        : "Match Confidence: 98%\nID verified by AI, reducing admin review time.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: secondaryTextColor, fontSize: 14),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(() => _isIdUploaded = true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD4A017),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(
+                      isArabic ? "متابعة" : "Continue",
+                      style: const TextStyle(color: Color(0xFF0D1420), fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      );
+    });
   }
 
   Widget _buildSectionTitle(String title) {

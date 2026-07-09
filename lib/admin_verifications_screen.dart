@@ -184,6 +184,36 @@ class _AdminVerificationsScreenState extends State<AdminVerificationsScreen> {
                         _buildDocPlaceholder(Icons.workspace_premium_outlined, t('شهادة الحرفة', 'Craft Certificate')),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.purpleAccent.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  t('ثقة الذكاء الاصطناعي: 94%', 'AI Trust Score: 94%'),
+                                  style: GoogleFonts.cairo(color: Colors.purpleAccent, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  t('المستندات تبدو أصلية ومطابقة للبيانات ولا يوجد تطابق مع حسابات احتيالية.', 'Documents appear authentic, match the data, and no fraud matches found.'),
+                                  style: GoogleFonts.cairo(color: textColor, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     Row(
                       children: [

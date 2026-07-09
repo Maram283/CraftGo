@@ -468,6 +468,50 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 16),
 
+            // AI Smart Bundling Section
+            Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.purpleAccent.withValues(alpha: 0.08),
+                    const Color(0xFFD4A017).withValues(alpha: 0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        t('🤖 الذكاء الاصطناعي يقترح لإكمال طلبك', '🤖 AI suggests to complete your order'),
+                        style: GoogleFonts.cairo(color: Colors.purpleAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 130,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        _buildAiBundleCard(Icons.watch_outlined, t('خاتم فضي', 'Silver Ring'), '35 JD', t('يكمل إطلالتك ✨', 'Completes your look ✨')),
+                        _buildAiBundleCard(Icons.checkroom_outlined, t('وشاح صوف', 'Wool Scarf'), '22 JD', t('منتج مشابه 🔥', 'Similar item 🔥')),
+                        _buildAiBundleCard(Icons.local_cafe_outlined, t('طقم شاي', 'Tea Set'), '48 JD', t('الأكثر شراءً معه', 'Bought together')),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Promo Code
             Row(
               children: [
@@ -555,6 +599,100 @@ class _CartScreenState extends State<CartScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAiBundleCard(IconData icon, String name, String price, String reason) {
+    final bool isDarkMode = widget.isDarkMode;
+    final surfaceColor = isDarkMode ? const Color(0xFF1C2431) : Colors.white;
+    final borderColor = isDarkMode ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.08);
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    bool added = false;
+
+    return StatefulBuilder(
+      builder: (context, setCardState) {
+        return GestureDetector(
+          onTap: () {
+            if (!added) {
+              setCardState(() => added = true);
+              // Add a new item to the cart list
+              setState(() {
+                _items.add(CartItem(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  titleAr: name,
+                  titleEn: name,
+                  craftsmanAr: widget.isArabic ? 'مقترح من AI' : 'AI Suggested',
+                  craftsmanEn: 'AI Suggested',
+                  price: double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0,
+                  imagePath: '',
+                  quantity: 1,
+                ));
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    widget.isArabic ? '✅ تمت إضافة "$name" إلى سلتك!' : '✅ "$name" added to your cart!',
+                    style: GoogleFonts.cairo(),
+                  ),
+                  backgroundColor: const Color(0xFFD4A017),
+                  duration: const Duration(seconds: 2),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              );
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 120,
+            margin: const EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: added ? const Color(0xFFD4A017).withValues(alpha: 0.15) : surfaceColor,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: added ? const Color(0xFFD4A017) : borderColor,
+                width: added ? 1.5 : 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 32, height: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4A017).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(icon, color: const Color(0xFFD4A017), size: 18),
+                    ),
+                    Container(
+                      width: 22, height: 22,
+                      decoration: BoxDecoration(
+                        color: added ? Colors.green : const Color(0xFFD4A017),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        added ? Icons.check : Icons.add,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(name, style: GoogleFonts.cairo(color: textColor, fontSize: 11, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(price, style: GoogleFonts.cairo(color: const Color(0xFFD4A017), fontSize: 11, fontWeight: FontWeight.bold)),
+                Text(reason, style: GoogleFonts.cairo(color: Colors.purpleAccent, fontSize: 9), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

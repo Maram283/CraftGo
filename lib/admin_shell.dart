@@ -6,6 +6,7 @@ import 'admin_dashboard.dart';
 import 'admin_users_screen.dart';
 import 'admin_verifications_screen.dart';
 import 'admin_disputes_screen.dart';
+import 'role_selection_screen.dart';
 
 class AdminShell extends StatefulWidget {
   final bool isArabic;
@@ -85,13 +86,12 @@ class _AdminShellState extends State<AdminShell> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Back button (to exit admin mode)
+                      // Logout button
                       _topBarButton(
-                        icon: widget.isArabic
-                            ? Icons.arrow_forward_ios
-                            : Icons.arrow_back_ios,
-                        label: "",
-                        onTap: () => Navigator.pop(context),
+                        icon: Icons.logout_rounded,
+                        label: widget.isArabic ? 'خروج' : 'Logout',
+                        onTap: () => _showLogoutDialog(context),
+                        isDestructive: true,
                       ),
                       
                       // App Title inside the Shell
@@ -196,31 +196,162 @@ class _AdminShellState extends State<AdminShell> {
     );
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (ctx) => Directionality(
+        textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: backgroundColor.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                      ),
+                      child: const Icon(Icons.logout_rounded, color: Colors.red, size: 32),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      widget.isArabic ? 'تسجيل الخروج' : 'Sign Out',
+                      style: GoogleFonts.cairo(
+                        color: primaryTextColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.isArabic
+                          ? 'هل أنت متأكد من رغبتك بالخروج من لوحة الإدارة؟'
+                          : 'Are you sure you want to exit the Admin panel?',
+                      style: GoogleFonts.cairo(
+                        color: secondaryTextColor,
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        // Cancel
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: chipBorderColor),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: Text(
+                              widget.isArabic ? 'إلغاء' : 'Cancel',
+                              style: GoogleFonts.cairo(
+                                color: secondaryTextColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Confirm logout
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (_) => RoleSelectionScreen(
+                                    isArabic: widget.isArabic,
+                                    isDarkMode: widget.isDarkMode,
+                                    onToggleLanguage: widget.onToggleLanguage,
+                                    onToggleTheme: widget.onToggleTheme,
+                                  ),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              widget.isArabic ? 'تأكيد الخروج' : 'Confirm',
+                              style: GoogleFonts.cairo(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _topBarButton({
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    bool isDestructive = false,
   }) {
+    final color = isDestructive ? Colors.red : topIconColor;
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: topButtonBackground,
+          color: isDestructive
+              ? Colors.red.withValues(alpha: 0.1)
+              : topButtonBackground,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: chipBorderColor),
+          border: Border.all(
+            color: isDestructive
+                ? Colors.red.withValues(alpha: 0.3)
+                : chipBorderColor,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: topIconColor),
+            Icon(icon, size: 16, color: color),
             if (label.isNotEmpty) ...[
               const SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
-                  color: topIconColor,
+                  color: color,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),

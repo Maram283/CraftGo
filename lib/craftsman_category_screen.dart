@@ -4,12 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_registration_screen.dart';
 import 'add_craft_details_screen.dart';
 
-
 class CraftsmanCategoryScreen extends StatefulWidget {
   final bool isArabic;
   final bool isDarkMode;
   final VoidCallback onToggleLanguage;
   final VoidCallback onToggleTheme;
+
   /// When true, selecting a craft fires [onCraftAdded] instead of pushing registration.
   final bool addCraftMode;
   final void Function(Map<String, dynamic> category)? onCraftAdded;
@@ -25,7 +25,8 @@ class CraftsmanCategoryScreen extends StatefulWidget {
   });
 
   @override
-  State<CraftsmanCategoryScreen> createState() => _CraftsmanCategoryScreenState();
+  State<CraftsmanCategoryScreen> createState() =>
+      _CraftsmanCategoryScreenState();
 }
 
 class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
@@ -72,11 +73,11 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
 
   Color get primaryTextColor => isDarkMode ? Colors.white : Colors.black87;
 
-  Color get secondaryTextColor =>
-      isDarkMode ? Colors.white70 : Colors.black54;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get topIconColor => isDarkMode ? Colors.white : Colors.black87;
 
@@ -101,49 +102,49 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
 
   // Categories definition
   List<Map<String, dynamic>> get categories => [
-        {
-          "icon": Icons.checkroom_outlined,
-          "titleAr": "خياطة وتطريز",
-          "titleEn": "Crochet & Knitting",
-          "descAr": "ملابس، دمى، وأقمشة مطرزة يدوياً.",
-          "descEn": "Handmade clothes, toys, and embroidered fabrics."
-        },
-        {
-          "icon": Icons.local_cafe_outlined, // fits pottery cup shape
-          "titleAr": "الفخار والخزف",
-          "titleEn": "Pottery & Ceramics",
-          "descAr": "أواني فخارية، لوحات سيراميك، وتحف طينية.",
-          "descEn": "Clay pots, ceramic plates, and earthen masterpieces."
-        },
-        {
-          "icon": Icons.watch_outlined,
-          "titleAr": "الحلي والمجوهرات",
-          "titleEn": "Jewelry & Accessories",
-          "descAr": "خواتم، أساور، وعقود يدوية فاخرة.",
-          "descEn": "Premium handmade rings, bracelets, and necklaces."
-        },
-        {
-          "icon": Icons.chair_outlined,
-          "titleAr": "أعمال الخشب والأثاث",
-          "titleEn": "Woodworking",
-          "descAr": "حفر على الخشب، إطارات، وهدايا خشبية.",
-          "descEn": "Wood carving, custom frames, and wooden gifts."
-        },
-        {
-          "icon": Icons.shopping_basket_outlined,
-          "titleAr": "صناعة السلال والقش",
-          "titleEn": "Weaving & Baskets",
-          "descAr": "سلال قش، مقاعد تقليدية، وحصائر يدوية.",
-          "descEn": "Straw baskets, traditional stools, and handmade mats."
-        },
-        {
-          "icon": Icons.brush_outlined,
-          "titleAr": "الرسم والزخرفة",
-          "titleEn": "Painting & Decoration",
-          "descAr": "لوحات فنية، خط عربي، وزخرفة الزجاج.",
-          "descEn": "Artistic paintings, Arabic calligraphy, and glass decor."
-        },
-      ];
+    {
+      "icon": Icons.checkroom_outlined,
+      "titleAr": "خياطة وتطريز",
+      "titleEn": "Crochet & Knitting",
+      "descAr": "ملابس، دمى، وأقمشة مطرزة يدوياً.",
+      "descEn": "Handmade clothes, toys, and embroidered fabrics.",
+    },
+    {
+      "icon": Icons.local_cafe_outlined, // fits pottery cup shape
+      "titleAr": "الفخار والخزف",
+      "titleEn": "Pottery & Ceramics",
+      "descAr": "أواني فخارية، لوحات سيراميك، وتحف طينية.",
+      "descEn": "Clay pots, ceramic plates, and earthen masterpieces.",
+    },
+    {
+      "icon": Icons.watch_outlined,
+      "titleAr": "الحلي والمجوهرات",
+      "titleEn": "Jewelry & Accessories",
+      "descAr": "خواتم، أساور، وعقود يدوية فاخرة.",
+      "descEn": "Premium handmade rings, bracelets, and necklaces.",
+    },
+    {
+      "icon": Icons.chair_outlined,
+      "titleAr": "أعمال الخشب والأثاث",
+      "titleEn": "Woodworking",
+      "descAr": "حفر على الخشب، إطارات، وهدايا خشبية.",
+      "descEn": "Wood carving, custom frames, and wooden gifts.",
+    },
+    {
+      "icon": Icons.shopping_basket_outlined,
+      "titleAr": "صناعة السلال والقش",
+      "titleEn": "Weaving & Baskets",
+      "descAr": "سلال قش، مقاعد تقليدية، وحصائر يدوية.",
+      "descEn": "Straw baskets, traditional stools, and handmade mats.",
+    },
+    {
+      "icon": Icons.brush_outlined,
+      "titleAr": "الرسم والزخرفة",
+      "titleEn": "Painting & Decoration",
+      "descAr": "لوحات فنية، خط عربي، وزخرفة الزجاج.",
+      "descEn": "Artistic paintings, Arabic calligraphy, and glass decor.",
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +166,9 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _topBarButton(
-                        icon: isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+                        icon: isArabic
+                            ? Icons.arrow_forward_ios
+                            : Icons.arrow_back_ios,
                         label: "",
                         onTap: () => Navigator.pop(context),
                       ),
@@ -203,7 +206,7 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                               primaryTextColor,
                               const Color(0xFFD4A017),
                               Colors.white,
-                              primaryTextColor
+                              primaryTextColor,
                             ],
                             begin: Alignment(-1.0 + dx * 2, -0.5),
                             end: Alignment(1.0 + dx * 2, 0.5),
@@ -211,7 +214,9 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                           ).createShader(bounds);
                         },
                         child: Text(
-                          isArabic ? "ما هي حرفتك الإبداعية؟" : "What is your creative craft?",
+                          isArabic
+                              ? "ما هي حرفتك الإبداعية؟"
+                              : "What is your creative craft?",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.arefRuqaa(
                             color: Colors.white,
@@ -228,10 +233,7 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                         ? "اختر مجالك الرئيسي لنوجهك للطلبات المناسبة"
                         : "Select your main craft to guide you to the right orders",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 14),
                   ),
                   const SizedBox(height: 25),
 
@@ -240,52 +242,52 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                     child: Scrollbar(
                       thumbVisibility: true,
                       child: GridView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 0.9,
-                      ),
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final cat = categories[index];
-                        final isSelected = selectedIndex == index;
-                        final delay = index * 100;
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.9,
+                            ),
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          final cat = categories[index];
+                          final isSelected = selectedIndex == index;
+                          final delay = index * 100;
 
-                        return TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.0, end: 1.0),
-                          duration: Duration(milliseconds: 600 + delay),
-                          curve: Curves.easeOutCubic,
-                          builder: (context, value, child) {
-                            return Transform.scale(
-                              scale: value,
-                              child: Opacity(
-                                opacity: value,
-                                child: child,
-                              ),
-                            );
-                          },
-                          child: CategoryGridCard(
-                            icon: cat["icon"],
-                            title: isArabic ? cat["titleAr"] : cat["titleEn"],
-                            description: isArabic ? cat["descAr"] : cat["descEn"],
-                            isSelected: isSelected,
-                            isDarkMode: isDarkMode,
-                            primaryTextColor: primaryTextColor,
-                            secondaryTextColor: secondaryTextColor,
-                            cardBorderColor: cardBorderColor,
-                            onTap: () {
-                              setState(() {
-                                selectedIndex = index;
-                              });
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: Duration(milliseconds: 600 + delay),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: value,
+                                child: Opacity(opacity: value, child: child),
+                              );
                             },
-                          ),
-                        );
-                      },
+                            child: CategoryGridCard(
+                              icon: cat["icon"],
+                              title: isArabic ? cat["titleAr"] : cat["titleEn"],
+                              description: isArabic
+                                  ? cat["descAr"]
+                                  : cat["descEn"],
+                              isSelected: isSelected,
+                              isDarkMode: isDarkMode,
+                              primaryTextColor: primaryTextColor,
+                              secondaryTextColor: secondaryTextColor,
+                              cardBorderColor: cardBorderColor,
+                              onTap: () {
+                                setState(() {
+                                  selectedIndex = index;
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
                   const SizedBox(height: 20),
 
                   // Confirm button
@@ -298,15 +300,14 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFFF7B500),
-                            Color(0xFFD89A00),
-                          ],
+                          colors: [Color(0xFFF7B500), Color(0xFFD89A00)],
                         ),
                         boxShadow: selectedIndex != null
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFFF7B500).withOpacity(0.3),
+                                  color: const Color(
+                                    0xFFF7B500,
+                                  ).withValues(alpha: 0.3),
                                   blurRadius: 15,
                                   spreadRadius: 1,
                                   offset: const Offset(0, 5),
@@ -348,13 +349,14 @@ class _CraftsmanCategoryScreenState extends State<CraftsmanCategoryScreen>
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => CraftsmanRegistrationScreen(
-                                        selectedCategory: selectedCat,
-                                        isArabic: isArabic,
-                                        isDarkMode: isDarkMode,
-                                        onToggleLanguage: toggleLanguage,
-                                        onToggleTheme: toggleTheme,
-                                      ),
+                                      builder: (context) =>
+                                          CraftsmanRegistrationScreen(
+                                            selectedCategory: selectedCat,
+                                            isArabic: isArabic,
+                                            isDarkMode: isDarkMode,
+                                            onToggleLanguage: toggleLanguage,
+                                            onToggleTheme: toggleTheme,
+                                          ),
                                     ),
                                   );
                                 }
@@ -474,26 +476,34 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(0, _isHovered && !_isPressed ? -6 : 0, 0),
+            transform: Matrix4.translationValues(
+              0,
+              _isHovered && !_isPressed ? -6 : 0,
+              0,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
                 color: widget.isSelected
                     ? activeColor
-                    : (_isHovered ? activeColor.withOpacity(0.6) : widget.cardBorderColor),
+                    : (_isHovered
+                          ? activeColor.withValues(alpha: 0.6)
+                          : widget.cardBorderColor),
                 width: widget.isSelected || _isHovered ? 2.0 : 1.5,
               ),
               boxShadow: [
                 BoxShadow(
                   color: widget.isSelected
-                      ? activeColor.withOpacity(0.2)
+                      ? activeColor.withValues(alpha: 0.2)
                       : (_isHovered
-                          ? activeColor.withOpacity(0.12)
-                          : (widget.isDarkMode
-                              ? activeColor.withOpacity(0.02)
-                              : Colors.black.withOpacity(0.03))),
+                            ? activeColor.withValues(alpha: 0.12)
+                            : (widget.isDarkMode
+                                  ? activeColor.withValues(alpha: 0.02)
+                                  : Colors.black.withValues(alpha: 0.03))),
                   blurRadius: _isHovered || widget.isSelected ? 20 : 12,
-                  offset: _isHovered || widget.isSelected ? const Offset(0, 8) : const Offset(0, 4),
+                  offset: _isHovered || widget.isSelected
+                      ? const Offset(0, 8)
+                      : const Offset(0, 4),
                 ),
               ],
             ),
@@ -502,25 +512,28 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: widget.isSelected
                           ? [
-                              activeColor.withOpacity(0.15),
-                              activeColor.withOpacity(0.03),
+                              activeColor.withValues(alpha: 0.15),
+                              activeColor.withValues(alpha: 0.03),
                             ]
                           : (widget.isDarkMode
-                              ? [
-                                  Colors.white.withOpacity(0.06),
-                                  Colors.white.withOpacity(0.015),
-                                ]
-                              : [
-                                  Colors.black.withOpacity(0.03),
-                                  Colors.black.withOpacity(0.005),
-                                ]),
+                                ? [
+                                    Colors.white.withValues(alpha: 0.06),
+                                    Colors.white.withValues(alpha: 0.015),
+                                  ]
+                                : [
+                                    Colors.black.withValues(alpha: 0.03),
+                                    Colors.black.withValues(alpha: 0.005),
+                                  ]),
                     ),
                   ),
                   child: Column(
@@ -540,17 +553,15 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                                     const Color(0xFFD89A00),
                                   ]
                                 : [
-                                    activeColor.withOpacity(0.2),
-                                    activeColor.withOpacity(0.05),
+                                    activeColor.withValues(alpha: 0.2),
+                                    activeColor.withValues(alpha: 0.05),
                                   ],
                           ),
                         ),
                         child: Icon(
                           widget.icon,
                           size: 22,
-                          color: widget.isSelected
-                              ? Colors.black
-                              : activeColor,
+                          color: widget.isSelected ? Colors.black : activeColor,
                         ),
                       ),
                       const SizedBox(height: 12),

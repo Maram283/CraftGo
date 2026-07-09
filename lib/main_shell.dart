@@ -9,6 +9,7 @@ import 'customer_login_screen.dart';
 import 'cart_screen.dart';
 import 'notifications_screen.dart';
 import 'favorites_screen.dart';
+import 'ai_chatbot_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // MainShell — persistent AppBar + BottomNavigationBar
 //
@@ -65,8 +66,12 @@ class _MainShellState extends State<MainShell> {
   @override
   void didUpdateWidget(covariant MainShell old) {
     super.didUpdateWidget(old);
-    if (old.isArabic != widget.isArabic) setState(() => _isArabic = widget.isArabic);
-    if (old.isDarkMode != widget.isDarkMode) setState(() => _isDarkMode = widget.isDarkMode);
+    if (old.isArabic != widget.isArabic) {
+      setState(() => _isArabic = widget.isArabic);
+    }
+    if (old.isDarkMode != widget.isDarkMode) {
+      setState(() => _isDarkMode = widget.isDarkMode);
+    }
   }
 
   void _toggleLanguage() {
@@ -83,7 +88,8 @@ class _MainShellState extends State<MainShell> {
   static const Color _gold = Color(0xFFFFD700);
   static const Color _navy = Color(0xFF0D1B33);
 
-  Color get _bg => _isDarkMode ? const Color(0xFF0D1420) : const Color(0xFFF5F6F8);
+  Color get _bg =>
+      _isDarkMode ? const Color(0xFF0D1420) : const Color(0xFFF5F6F8);
   Color get _surface => _isDarkMode ? const Color(0xFF1C2431) : Colors.white;
   Color get _primaryText => _isDarkMode ? Colors.white : Colors.black87;
   Color get _border => _isDarkMode ? Colors.white12 : Colors.black12;
@@ -109,27 +115,18 @@ class _MainShellState extends State<MainShell> {
     // ── Tab 1: AI Search ──────────────────────────────────────────────────
     widget.isGuest
         ? _buildLoginRequiredView(Icons.auto_awesome, _titles[1])
-        : AIOrderScreen(
-            isArabic: _isArabic,
-            isDarkMode: _isDarkMode,
-          ),
-          
+        : AIOrderScreen(isArabic: _isArabic, isDarkMode: _isDarkMode),
+
     // ── Tab 2: My Orders ──────────────────────────────────────────────────
     widget.isGuest
         ? _buildLoginRequiredView(Icons.receipt_long, _titles[2])
-        : MyOrdersScreen(
-            isArabic: _isArabic,
-            isDarkMode: _isDarkMode,
-          ),
+        : MyOrdersScreen(isArabic: _isArabic, isDarkMode: _isDarkMode),
 
     // ── Tab 3: Chats ──────────────────────────────────────────────────────
     widget.isGuest
         ? _buildLoginRequiredView(Icons.chat_bubble_outline, _titles[3])
-        : ChatInboxScreen(
-            isArabic: _isArabic,
-            isDarkMode: _isDarkMode,
-          ),
-          
+        : ChatInboxScreen(isArabic: _isArabic, isDarkMode: _isDarkMode),
+
     // ── Tab 4: Profile ────────────────────────────────────────────────────
     widget.isGuest
         ? _buildLoginRequiredView(Icons.person_outline, _titles[4])
@@ -163,7 +160,7 @@ class _MainShellState extends State<MainShell> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: _accent.withOpacity(0.1),
+                  color: _accent.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 60, color: _accent),
@@ -179,13 +176,13 @@ class _MainShellState extends State<MainShell> {
               ),
               const SizedBox(height: 12),
               Text(
-                _isArabic 
+                _isArabic
                     ? "يرجى تسجيل الدخول للوصول إلى هذه الميزة والاستمتاع بكامل خدمات CraftGo."
                     : "Please log in to access this feature and enjoy all CraftGo services.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: _primaryText.withOpacity(0.7),
+                  color: _primaryText.withValues(alpha: 0.7),
                   height: 1.5,
                 ),
               ),
@@ -271,8 +268,8 @@ class _MainShellState extends State<MainShell> {
           style: TextStyle(color: _primaryText, fontWeight: FontWeight.bold),
         ),
         content: Text(
-          _isArabic 
-              ? 'يرجى تسجيل الدخول للوصول إلى هذه الميزة.' 
+          _isArabic
+              ? 'يرجى تسجيل الدخول للوصول إلى هذه الميزة.'
               : 'Please log in to access this feature.',
           style: TextStyle(color: _primaryText),
         ),
@@ -287,7 +284,9 @@ class _MainShellState extends State<MainShell> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _accent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () {
               Navigator.pop(context); // Close dialog
@@ -333,7 +332,10 @@ class _MainShellState extends State<MainShell> {
             },
             child: Text(
               _isArabic ? 'تسجيل الدخول' : 'Login',
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -386,7 +388,9 @@ class _MainShellState extends State<MainShell> {
     return Directionality(
       textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: _isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        value: _isDarkMode
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
         child: Scaffold(
           backgroundColor: _bg,
 
@@ -492,7 +496,9 @@ class _MainShellState extends State<MainShell> {
 
               // Theme toggle
               _IconBtn(
-                icon: _isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                icon: _isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
                 color: _primaryText,
                 surface: _surface,
                 border: _border,
@@ -560,9 +566,23 @@ class _MainShellState extends State<MainShell> {
 
           // ── Body ────────────────────────────────────────────────────────
           // IndexedStack keeps each page alive (preserves scroll, state, etc.)
-          body: IndexedStack(
-            index: _currentIndex,
-            children: _pages,
+          body: IndexedStack(index: _currentIndex, children: _pages),
+
+          // ── AI Chatbot FAB ──────────────────────────────────────────────
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AiChatbotScreen(
+                    isArabic: _isArabic,
+                    isDarkMode: _isDarkMode,
+                  ),
+                ),
+              );
+            },
+            backgroundColor: const Color(0xFF6A1B9A),
+            child: const Icon(Icons.auto_awesome, color: Colors.white),
           ),
 
           // ── Bottom Nav ──────────────────────────────────────────────────
@@ -711,7 +731,7 @@ class _NavItemCenter extends StatelessWidget {
               width: 48,
               height: 36,
               decoration: BoxDecoration(
-                color: sel ? accent : accent.withOpacity(0.12),
+                color: sel ? accent : accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Icon(icon, size: 22, color: sel ? Colors.black : accent),
@@ -722,7 +742,7 @@ class _NavItemCenter extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
-                color: sel ? accent : accent.withOpacity(0.6),
+                color: sel ? accent : accent.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -860,7 +880,7 @@ class _Placeholder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 56, color: accent.withOpacity(0.35)),
+          Icon(icon, size: 56, color: accent.withValues(alpha: 0.35)),
           const SizedBox(height: 16),
           Text(
             label,
@@ -873,10 +893,7 @@ class _Placeholder extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Coming soon',
-            style: TextStyle(
-              color: secondaryText,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: secondaryText, fontSize: 14),
           ),
         ],
       ),
@@ -931,7 +948,7 @@ class _ProfilePlaceholder extends StatelessWidget {
                   border: Border.all(color: accent, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: accent.withOpacity(0.2),
+                      color: accent.withValues(alpha: 0.2),
                       blurRadius: 15,
                       spreadRadius: 1,
                     ),
@@ -958,10 +975,7 @@ class _ProfilePlaceholder extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 isArabic ? 'زبون' : 'Customer',
-                style: TextStyle(
-                  color: secondaryText,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: secondaryText, fontSize: 14),
               ),
               const SizedBox(height: 30),
 
@@ -1023,7 +1037,9 @@ class _ProfilePlaceholder extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   _ProfileToggleButton(
-                    icon: isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                    icon: isDarkMode
+                        ? Icons.light_mode_outlined
+                        : Icons.dark_mode_outlined,
                     label: '',
                     isDarkMode: isDarkMode,
                     primaryText: primaryText,
@@ -1088,19 +1104,16 @@ class _ProfileMenuItem extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: border),
-        color: isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+        color: isDarkMode
+            ? Colors.white.withValues(alpha: 0.04)
+            : Colors.black.withValues(alpha: 0.02),
       ),
       child: ListTile(
         leading: Icon(icon, color: const Color(0xFFD4A017)),
-        title: Text(
-          label,
-          style: TextStyle(color: primaryText),
-        ),
+        title: Text(label, style: TextStyle(color: primaryText)),
         trailing: Icon(Icons.arrow_forward_ios, size: 16, color: secondaryText),
         onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -54,8 +53,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Color get secondaryTextColor =>
       widget.isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      widget.isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => widget.isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get surfaceColor =>
       widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white;
@@ -100,7 +100,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: secondaryTextColor.withOpacity(0.3),
+                      color: secondaryTextColor.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -122,7 +122,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: accent.withOpacity(0.2),
+                        backgroundColor: accent.withValues(alpha: 0.2),
                         child: Icon(Icons.person, size: 50, color: accent),
                       ),
                       Positioned(
@@ -135,7 +135,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                             border: Border.all(color: surfaceColor, width: 2),
                           ),
                           child: IconButton(
-                            icon: Icon(Icons.camera_alt, size: 18, color: Colors.black),
+                            icon: Icon(
+                              Icons.camera_alt,
+                              size: 18,
+                              color: Colors.black,
+                            ),
                             onPressed: () {},
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
@@ -266,8 +270,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             decoration: InputDecoration(
               filled: true,
               fillColor: widget.isDarkMode
-                  ? Colors.white.withOpacity(0.04)
-                  : Colors.black.withOpacity(0.02),
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.black.withValues(alpha: 0.02),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -276,7 +280,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: accent),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
           ),
         ],
@@ -284,10 +291,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     );
   }
 
-  Widget _buildReadOnlyField({
-    required String label,
-    required String value,
-  }) {
+  Widget _buildReadOnlyField({required String label, required String value}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -306,8 +310,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: widget.isDarkMode
-                  ? Colors.white.withOpacity(0.04)
-                  : Colors.black.withOpacity(0.02),
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.black.withValues(alpha: 0.02),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: cardBorderColor),
             ),
@@ -316,10 +320,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 Expanded(
                   child: Text(
                     value,
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 14),
                   ),
                 ),
                 Icon(Icons.lock_outline, size: 16, color: secondaryTextColor),
@@ -351,7 +352,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             // Theme Toggle
             ListTile(
               leading: Icon(
-                widget.isDarkMode ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                widget.isDarkMode
+                    ? Icons.dark_mode_outlined
+                    : Icons.light_mode_outlined,
                 color: accent,
               ),
               title: Text(
@@ -361,7 +364,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               trailing: Switch(
                 value: widget.isDarkMode,
                 onChanged: (_) => widget.onToggleTheme(),
-                activeColor: accent,
+                activeThumbColor: accent,
               ),
             ),
             // Language Toggle
@@ -379,11 +382,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     style: TextStyle(color: primaryTextColor, fontSize: 13),
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.swap_horiz,
-                      color: accent,
-                      size: 20,
-                    ),
+                    icon: Icon(Icons.swap_horiz, color: accent, size: 20),
                     onPressed: widget.onToggleLanguage,
                   ),
                 ],
@@ -399,7 +398,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               trailing: Switch(
                 value: true,
                 onChanged: (_) {},
-                activeColor: accent,
+                activeThumbColor: accent,
               ),
             ),
             ListTile(
@@ -442,10 +441,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
-              t('إغلاق', 'Close'),
-              style: TextStyle(color: accent),
-            ),
+            child: Text(t('إغلاق', 'Close'), style: TextStyle(color: accent)),
           ),
         ],
       ),
@@ -462,38 +458,83 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlg) => Directionality(
-          textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: widget.isArabic
+              ? TextDirection.rtl
+              : TextDirection.ltr,
           child: AlertDialog(
             backgroundColor: surfaceColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Text(t('تغيير كلمة المرور', 'Change Password'),
-                style: GoogleFonts.cairo(color: primaryTextColor, fontWeight: FontWeight.bold)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              t('تغيير كلمة المرور', 'Change Password'),
+              style: GoogleFonts.cairo(
+                color: primaryTextColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _passField(currentCtrl, t('كلمة المرور الحالية', 'Current Password'), obscure1, () => setDlg(() => obscure1 = !obscure1)),
+                _passField(
+                  currentCtrl,
+                  t('كلمة المرور الحالية', 'Current Password'),
+                  obscure1,
+                  () => setDlg(() => obscure1 = !obscure1),
+                ),
                 const SizedBox(height: 12),
-                _passField(newCtrl, t('كلمة المرور الجديدة', 'New Password'), obscure2, () => setDlg(() => obscure2 = !obscure2)),
+                _passField(
+                  newCtrl,
+                  t('كلمة المرور الجديدة', 'New Password'),
+                  obscure2,
+                  () => setDlg(() => obscure2 = !obscure2),
+                ),
                 const SizedBox(height: 12),
-                _passField(confirmCtrl, t('تأكيد كلمة المرور', 'Confirm Password'), obscure3, () => setDlg(() => obscure3 = !obscure3)),
+                _passField(
+                  confirmCtrl,
+                  t('تأكيد كلمة المرور', 'Confirm Password'),
+                  obscure3,
+                  () => setDlg(() => obscure3 = !obscure3),
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text(t('إلغاء', 'Cancel'), style: TextStyle(color: secondaryTextColor)),
+                child: Text(
+                  t('إلغاء', 'Cancel'),
+                  style: TextStyle(color: secondaryTextColor),
+                ),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: accent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: accent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text(t('تم تغيير كلمة المرور بنجاح ✅', 'Password changed successfully ✅'),
-                        style: GoogleFonts.cairo(color: Colors.white)),
-                  ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text(
+                        t(
+                          'تم تغيير كلمة المرور بنجاح ✅',
+                          'Password changed successfully ✅',
+                        ),
+                        style: GoogleFonts.cairo(color: Colors.white),
+                      ),
+                    ),
+                  );
                 },
-                child: Text(t('حفظ', 'Save'), style: GoogleFonts.cairo(color: Colors.black, fontWeight: FontWeight.bold)),
+                child: Text(
+                  t('حفظ', 'Save'),
+                  style: GoogleFonts.cairo(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -502,7 +543,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     );
   }
 
-  Widget _passField(TextEditingController ctrl, String label, bool obscure, VoidCallback onToggle) {
+  Widget _passField(
+    TextEditingController ctrl,
+    String label,
+    bool obscure,
+    VoidCallback onToggle,
+  ) {
     return TextField(
       controller: ctrl,
       obscureText: obscure,
@@ -512,14 +558,27 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         labelStyle: TextStyle(color: secondaryTextColor),
         prefixIcon: Icon(Icons.lock_outline, color: secondaryTextColor),
         suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: secondaryTextColor, size: 20),
+          icon: Icon(
+            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            color: secondaryTextColor,
+            size: 20,
+          ),
           onPressed: onToggle,
         ),
         filled: true,
         fillColor: cardBorderColor.withValues(alpha: 0.5),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: cardBorderColor)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: accent, width: 2)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: cardBorderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
     );
   }
@@ -529,7 +588,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: surfaceColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
       builder: (ctx) => Directionality(
         textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: SizedBox(
@@ -539,10 +600,25 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: secondaryTextColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: secondaryTextColor.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                Text(t('سياسة الخصوصية', 'Privacy Policy'),
-                    style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(
+                  t('سياسة الخصوصية', 'Privacy Policy'),
+                  style: GoogleFonts.cairo(
+                    color: primaryTextColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
@@ -552,15 +628,24 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                       children: [
                         _privacySection(
                           t('جمع البيانات', 'Data Collection'),
-                          t('نجمع بياناتك فقط لتحسين تجربتك على التطبيق. لا نبيع بياناتك لأي جهة خارجية.', 'We collect your data only to improve your app experience. We never sell your data to third parties.'),
+                          t(
+                            'نجمع بياناتك فقط لتحسين تجربتك على التطبيق. لا نبيع بياناتك لأي جهة خارجية.',
+                            'We collect your data only to improve your app experience. We never sell your data to third parties.',
+                          ),
                         ),
                         _privacySection(
                           t('الدفع والأمان', 'Payment & Security'),
-                          t('جميع المدفوعات محمية بنظام Escrow — لا يصل الحرفي مبلغه حتى تأكدك من استلام الخدمة.', 'All payments are protected by Escrow — the craftsman does not receive funds until you confirm service delivery.'),
+                          t(
+                            'جميع المدفوعات محمية بنظام Escrow — لا يصل الحرفي مبلغه حتى تأكدك من استلام الخدمة.',
+                            'All payments are protected by Escrow — the craftsman does not receive funds until you confirm service delivery.',
+                          ),
                         ),
                         _privacySection(
                           t('حذف الحساب', 'Account Deletion'),
-                          t('يمكنك طلب حذف حسابك وبياناتك في أي وقت عبر التواصل مع الدعم.', 'You can request account and data deletion at any time by contacting support.'),
+                          t(
+                            'يمكنك طلب حذف حسابك وبياناتك في أي وقت عبر التواصل مع الدعم.',
+                            'You can request account and data deletion at any time by contacting support.',
+                          ),
                         ),
                       ],
                     ),
@@ -582,13 +667,34 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         children: [
           Row(
             children: [
-              Container(width: 4, height: 18, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: accent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(width: 8),
-              Text(title, style: GoogleFonts.cairo(color: primaryTextColor, fontWeight: FontWeight.bold, fontSize: 15)),
+              Text(
+                title,
+                style: GoogleFonts.cairo(
+                  color: primaryTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
-          Text(body, style: GoogleFonts.cairo(color: secondaryTextColor, fontSize: 13, height: 1.6)),
+          Text(
+            body,
+            style: GoogleFonts.cairo(
+              color: secondaryTextColor,
+              fontSize: 13,
+              height: 1.6,
+            ),
+          ),
         ],
       ),
     );
@@ -604,7 +710,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           style: TextStyle(color: primaryTextColor),
         ),
         content: Text(
-          t('هل أنت متأكد من رغبتك في تسجيل الخروج؟', 'Are you sure you want to logout?'),
+          t(
+            'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+            'Are you sure you want to logout?',
+          ),
           style: TextStyle(color: primaryTextColor),
         ),
         actions: [
@@ -664,12 +773,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 56,
-                    backgroundColor: accent.withOpacity(0.2),
-                    child: Icon(
-                      Icons.person,
-                      size: 56,
-                      color: accent,
-                    ),
+                    backgroundColor: accent.withValues(alpha: 0.2),
+                    child: Icon(Icons.person, size: 56, color: accent),
                   ),
                   Positioned(
                     bottom: 0,
@@ -706,7 +811,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.location_on_outlined, size: 14, color: secondaryTextColor),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 14,
+                    color: secondaryTextColor,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     location,
@@ -784,11 +893,12 @@ class _MenuItem extends StatelessWidget {
       ),
       child: ListTile(
         leading: Icon(icon, color: accent),
-        title: Text(
-          label,
-          style: TextStyle(color: primaryText, fontSize: 15),
+        title: Text(label, style: TextStyle(color: primaryText, fontSize: 15)),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: primaryText.withValues(alpha: 0.4),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: primaryText.withOpacity(0.4)),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),

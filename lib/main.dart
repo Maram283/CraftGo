@@ -9,6 +9,10 @@ void main() {
 class CraftGoApp extends StatefulWidget {
   const CraftGoApp({super.key});
 
+  static _CraftGoAppState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_CraftGoAppState>();
+  }
+
   @override
   State<CraftGoApp> createState() => _CraftGoAppState();
 }
@@ -22,6 +26,8 @@ class _CraftGoAppState extends State<CraftGoApp> {
       isArabic = !isArabic;
     });
   }
+
+  void toggleLocale() => toggleLanguage();
 
   void toggleTheme() {
     setState(() {
@@ -38,12 +44,15 @@ class _CraftGoAppState extends State<CraftGoApp> {
         scaffoldBackgroundColor: const Color(0xFF0D1420),
         useMaterial3: true,
       ),
-      home: OnboardingScreen(
-        isArabic: isArabic,
-        isDarkMode: isDarkMode,
-        onToggleLanguage: toggleLanguage,
-        onToggleTheme: toggleTheme,
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => OnboardingScreen(
+              isArabic: isArabic,
+              isDarkMode: isDarkMode,
+              onToggleLanguage: toggleLanguage,
+              onToggleTheme: toggleTheme,
+            ),
+      },
     );
   }
 }
@@ -96,7 +105,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   String get startButtonText => isArabic ? "ابدأ رحلتك" : "Start Your Journey";
 
-  String get aiOrdersText => isArabic ? "طلبات ذكية بالـ AI" : "AI Smart Orders";
+  String get aiOrdersText =>
+      isArabic ? "طلبات ذكية بالـ AI" : "AI Smart Orders";
 
   String get bidsText => isArabic ? "عروض تنافسية" : "Competitive Bids";
 
@@ -115,8 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Color get primaryTextColor => isDarkMode ? Colors.white : Colors.black87;
 
-  Color get secondaryTextColor =>
-      isDarkMode ? Colors.white70 : Colors.black54;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
 
   Color get chipBackgroundColor =>
       isDarkMode ? const Color(0xFF1C2431) : Colors.white;
@@ -131,13 +140,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       isDarkMode ? const Color(0xFF1C2431) : Colors.white;
 
   // Main CTA button: bright gold in dark mode, navy in light mode
-  List<Color> get ctaGradient => isDarkMode
-      ? [goldBrightLight, goldBright]
-      : [navyLight, navy];
+  List<Color> get ctaGradient =>
+      isDarkMode ? [goldBrightLight, goldBright] : [navyLight, navy];
 
   Color get ctaGlowColor => isDarkMode
-      ? goldBright.withOpacity(0.55)
-      : navy.withOpacity(0.35);
+      ? goldBright.withValues(alpha: 0.55)
+      : navy.withValues(alpha: 0.35);
 
   Color get ctaTextColor => isDarkMode ? Colors.black : Colors.white;
 
@@ -166,10 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           child: Center(
             child: Container(
               constraints: const BoxConstraints(maxWidth: 430),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -355,9 +360,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       height: 58,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        gradient: LinearGradient(
-                          colors: ctaGradient,
-                        ),
+                        gradient: LinearGradient(colors: ctaGradient),
                         boxShadow: [
                           BoxShadow(
                             color: ctaGlowColor,
@@ -444,22 +447,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Widget _glassCard(
-      String imagePath, {
-        required double width,
-        required double height,
-      }) {
+    String imagePath, {
+    required double width,
+    required double height,
+  }) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: cardBorderColor,
-          width: 2,
-        ),
+        border: Border.all(color: cardBorderColor, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: Colors.black.withValues(alpha: 0.35),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -467,10 +467,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
-        child: Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-        ),
+        child: Image.asset(imagePath, fit: BoxFit.cover),
       ),
     );
   }
@@ -497,33 +494,18 @@ class FeatureChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(
-          color: borderColor,
-        ),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: iconColor,
-          ),
+          Icon(icon, size: 18, color: iconColor),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 12,
-            ),
-          ),
+          Text(text, style: TextStyle(color: textColor, fontSize: 12)),
         ],
       ),
     );

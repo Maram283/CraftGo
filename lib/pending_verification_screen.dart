@@ -40,7 +40,10 @@ class PendingVerificationScreen extends StatelessWidget {
             children: [
               // Top Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -76,7 +79,7 @@ class PendingVerificationScreen extends StatelessWidget {
                         width: 120,
                         height: 120,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD4A017).withOpacity(0.1),
+                          color: const Color(0xFFD4A017).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -89,7 +92,9 @@ class PendingVerificationScreen extends StatelessWidget {
 
                       // Title
                       Text(
-                        isArabic ? "حسابك قيد المراجعة" : "Account Pending Verification",
+                        isArabic
+                            ? "حسابك قيد المراجعة"
+                            : "Account Pending Verification",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.arefRuqaa(
                           color: primaryTextColor,
@@ -113,20 +118,37 @@ class PendingVerificationScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFD4A017).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFD4A017).withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: const Color(
+                              0xFFD4A017,
+                            ).withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.access_time, color: Color(0xFFD4A017), size: 18),
+                            const Icon(
+                              Icons.access_time,
+                              color: Color(0xFFD4A017),
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Text(
-                              isArabic ? "عادة ما تستغرق المراجعة 24-48 ساعة" : "Usually takes 24-48 hours",
-                              style: const TextStyle(color: Color(0xFFD4A017), fontWeight: FontWeight.bold, fontSize: 13),
+                              isArabic
+                                  ? "عادة ما تستغرق المراجعة 24-48 ساعة"
+                                  : "Usually takes 24-48 hours",
+                              style: const TextStyle(
+                                color: Color(0xFFD4A017),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
@@ -140,14 +162,13 @@ class PendingVerificationScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFF7B500),
-                              Color(0xFFD89A00),
-                            ],
+                            colors: [Color(0xFFF7B500), Color(0xFFD89A00)],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFF7B500).withOpacity(0.3),
+                              color: const Color(
+                                0xFFF7B500,
+                              ).withValues(alpha: 0.3),
                               blurRadius: 15,
                               spreadRadius: 1,
                               offset: const Offset(0, 5),
@@ -172,10 +193,14 @@ class PendingVerificationScreen extends StatelessWidget {
                                   onToggleLanguage: onToggleLanguage,
                                   onToggleTheme: onToggleTheme,
                                   craftsmanName: "محمد الحرفي", // Mock Data
-                                  craftsmanCategoryAr: selectedCategory['titleAr'] ?? "حرفي",
-                                  craftsmanCategoryEn: selectedCategory['titleEn'] ?? "Craftsman",
+                                  craftsmanCategoryAr:
+                                      selectedCategory['titleAr'] ?? "حرفي",
+                                  craftsmanCategoryEn:
+                                      selectedCategory['titleEn'] ??
+                                      "Craftsman",
                                   craftsmanCity: "نابلس، فلسطين",
-                                  craftsmanBio: "خبير في الأعمال الخشبية الكلاسيكية والمودرن.",
+                                  craftsmanBio:
+                                      "خبير في الأعمال الخشبية الكلاسيكية والمودرن.",
                                   craftsmanExperience: "12 سنة",
                                   isVerified: false,
                                   isPending: true,
@@ -184,7 +209,9 @@ class PendingVerificationScreen extends StatelessWidget {
                             );
                           },
                           child: Text(
-                            isArabic ? "استكشف لوحة التحكم" : "Explore Dashboard",
+                            isArabic
+                                ? "استكشف لوحة التحكم"
+                                : "Explore Dashboard",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

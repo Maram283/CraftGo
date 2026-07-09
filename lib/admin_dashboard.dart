@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'chat_detail_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   final bool isArabic;
@@ -183,6 +184,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       );
                     },
                   ),
+                  const SizedBox(height: 35),
+
+                  // Section: Pending Exhibitions (AI Analyzed)
+                  Text(
+                    widget.isArabic ? "معارض بانتظار الموافقة" : "Pending Exhibitions",
+                    style: GoogleFonts.arefRuqaa(
+                      color: primaryTextColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  _buildExhibitionApprovalCard(),
                   const SizedBox(height: 35),
 
                   // Section 2: Active Disputes
@@ -461,4 +475,124 @@ class _AdminDashboardState extends State<AdminDashboard> {
     ));
   }
 
+  Widget _buildExhibitionApprovalCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: widget.isDarkMode ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cardBorderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: Colors.blueAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.storefront, color: Colors.blueAccent),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.isArabic ? "معرض ألوان الخريف" : "Autumn Colors Exhibition",
+                      style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    Text(
+                      widget.isArabic ? "مقدم من: رامي خالد" : "By: Rami Khalid",
+                      style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // AI Analysis Box
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.purpleAccent.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.2)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 18),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.isArabic ? "تحليل الذكاء الاصطناعي (ثقة 65%)" : "AI Analysis (65% Trust)",
+                      style: GoogleFonts.cairo(color: Colors.purpleAccent, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(widget.isArabic ? "الموقع ممتاز والتواريخ مناسبة لموسم العطلات." : "Great location and dates fit the holiday season.", style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 12))),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(widget.isArabic ? "حساب جديد ولم يرفق صور كافية لمساحة المعرض." : "New account, not enough photos of the exhibition space.", style: GoogleFonts.cairo(color: primaryTextColor, fontSize: 12))),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChatDetailScreen(
+                          isArabic: widget.isArabic,
+                          isDarkMode: widget.isDarkMode,
+                          name: widget.isArabic ? "رامي خالد" : "Rami Khalid",
+                          craft: widget.isArabic ? "صاحب معرض" : "Exhibition Owner",
+                          online: true,
+                          orderTitle: widget.isArabic ? "معرض ألوان الخريف" : "Autumn Colors Exhibition",
+                          orderStatus: "in_progress",
+                          orderPrice: "-",
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.chat_bubble_outline, size: 18, color: Colors.blueAccent),
+                  label: Text(widget.isArabic ? "مراسلة" : "Message", style: const TextStyle(color: Colors.blueAccent)),
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.blueAccent), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFD4A017), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                  child: Text(widget.isArabic ? "قبول" : "Approve", style: const TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

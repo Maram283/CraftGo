@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// A single message bubble in the conversation.
 class _ChatMessage {
@@ -7,7 +6,11 @@ class _ChatMessage {
   final bool isMe;
   final String time;
 
-  const _ChatMessage({required this.text, required this.isMe, required this.time});
+  const _ChatMessage({
+    required this.text,
+    required this.isMe,
+    required this.time,
+  });
 }
 
 class ChatDetailScreen extends StatefulWidget {
@@ -56,12 +59,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       time: '10:12',
     ),
     _ChatMessage(
-      text: t('رائع، هل يمكنك إرسال صورة قبل الشحن؟', 'Great, can you send a photo before shipping?'),
+      text: t(
+        'رائع، هل يمكنك إرسال صورة قبل الشحن؟',
+        'Great, can you send a photo before shipping?',
+      ),
       isMe: true,
       time: '10:14',
     ),
     _ChatMessage(
-      text: t('بالتأكيد، سأرسلها فور الانتهاء من القطعة.', 'Of course, I\'ll send it once the piece is done.'),
+      text: t(
+        'بالتأكيد، سأرسلها فور الانتهاء من القطعة.',
+        'Of course, I\'ll send it once the piece is done.',
+      ),
       isMe: false,
       time: '10:15',
     ),
@@ -73,15 +82,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Color get backgroundColor =>
       widget.isDarkMode ? const Color(0xFF0D1420) : const Color(0xFFF5F6F8);
 
-  Color get primaryTextColor => widget.isDarkMode ? Colors.white : Colors.black87;
+  Color get primaryTextColor =>
+      widget.isDarkMode ? Colors.white : Colors.black87;
 
   Color get secondaryTextColor =>
       widget.isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      widget.isDarkMode ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+  Color get cardBorderColor => widget.isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
-  Color get surfaceColor => widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white;
+  Color get surfaceColor =>
+      widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white;
 
   Color get bubbleOtherColor =>
       widget.isDarkMode ? const Color(0xFF1C2431) : Colors.white;
@@ -141,7 +153,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     backgroundColor: accent.withValues(alpha: 0.2),
                     child: Text(
                       widget.name.isNotEmpty ? widget.name[0] : '?',
-                      style: TextStyle(color: accent, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: accent,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   if (widget.online)
@@ -154,7 +169,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         decoration: BoxDecoration(
                           color: Colors.green,
                           shape: BoxShape.circle,
-                          border: Border.all(color: backgroundColor, width: 1.5),
+                          border: Border.all(
+                            color: backgroundColor,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -177,9 +195,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      widget.online ? t('متصل الآن', 'Online now') : widget.craft,
+                      widget.online
+                          ? t('متصل الآن', 'Online now')
+                          : widget.craft,
                       style: TextStyle(
-                        color: widget.online ? Colors.green : secondaryTextColor,
+                        color: widget.online
+                            ? Colors.green
+                            : secondaryTextColor,
                         fontSize: 11.5,
                       ),
                     ),
@@ -238,7 +260,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: accent.withValues(alpha: 0.18),
                                   borderRadius: BorderRadius.circular(8),
@@ -271,11 +296,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         // TODO: Navigate to OrderDetailsScreen
                       },
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                       ),
                       child: Text(
                         t('عرض', 'View'),
-                        style: TextStyle(color: accent, fontWeight: FontWeight.bold, fontSize: 12.5),
+                        style: TextStyle(
+                          color: accent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.5,
+                        ),
                       ),
                     ),
                   ],
@@ -287,7 +319,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final msg = _messages[index];
@@ -305,7 +340,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             // ── Input bar ────────────────────────────────────────────────
             Container(
               padding: EdgeInsets.fromLTRB(
-                12, 10, 12, 10 + MediaQuery.of(context).padding.bottom,
+                12,
+                10,
+                12,
+                10 + MediaQuery.of(context).padding.bottom,
               ),
               decoration: BoxDecoration(
                 color: surfaceColor,
@@ -314,7 +352,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.add_photo_alternate_outlined, color: secondaryTextColor),
+                    icon: Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: secondaryTextColor,
+                    ),
                     onPressed: () {
                       // TODO: attach image
                     },
@@ -332,9 +373,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                           hintText: t('اكتب رسالة...', 'Type a message...'),
-                          hintStyle: TextStyle(color: secondaryTextColor.withValues(alpha: 0.6)),
+                          hintStyle: TextStyle(
+                            color: secondaryTextColor.withValues(alpha: 0.6),
+                          ),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                         ),
                         onSubmitted: (_) => _sendMessage(),
                       ),
@@ -352,7 +398,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           colors: [Color(0xFFF7B500), Color(0xFFD89A00)],
                         ),
                       ),
-                      child: const Icon(Icons.send_rounded, color: Colors.black, size: 20),
+                      child: const Icon(
+                        Icons.send_rounded,
+                        color: Colors.black,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
@@ -387,7 +437,9 @@ class _MessageBubble extends StatelessWidget {
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.72),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.72,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: isMe ? accent : bubbleOther,
@@ -414,7 +466,9 @@ class _MessageBubble extends StatelessWidget {
             Text(
               message.time,
               style: TextStyle(
-                color: isMe ? Colors.black54 : primaryText.withValues(alpha: 0.5),
+                color: isMe
+                    ? Colors.black54
+                    : primaryText.withValues(alpha: 0.5),
                 fontSize: 10,
               ),
             ),

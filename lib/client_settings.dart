@@ -51,11 +51,11 @@ class _ClientDashboardState extends State<ClientDashboard> {
 
   Color get primaryTextColor => isDarkMode ? Colors.white : Colors.black87;
 
-  Color get secondaryTextColor =>
-      isDarkMode ? Colors.white70 : Colors.black54;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get topIconColor => isDarkMode ? Colors.white : Colors.black87;
 
@@ -65,8 +65,8 @@ class _ClientDashboardState extends State<ClientDashboard> {
   Color get chipBorderColor => isDarkMode ? Colors.white12 : Colors.black12;
 
   Color get sheetBackground => isDarkMode
-      ? const Color(0xFF0D1420).withOpacity(0.95)
-      : Colors.white.withOpacity(0.95);
+      ? const Color(0xFF0D1420).withValues(alpha: 0.95)
+      : Colors.white.withValues(alpha: 0.95);
 
   void toggleLanguage() {
     setState(() {
@@ -85,8 +85,16 @@ class _ClientDashboardState extends State<ClientDashboard> {
   // Category filter items
   List<Map<String, dynamic>> get categories => [
     {"icon": Icons.all_inclusive, "titleAr": "الكل", "titleEn": "All"},
-    {"icon": Icons.checkroom_outlined, "titleAr": "تطريز", "titleEn": "Crochet"},
-    {"icon": Icons.local_cafe_outlined, "titleAr": "فخار", "titleEn": "Pottery"},
+    {
+      "icon": Icons.checkroom_outlined,
+      "titleAr": "تطريز",
+      "titleEn": "Crochet",
+    },
+    {
+      "icon": Icons.local_cafe_outlined,
+      "titleAr": "فخار",
+      "titleEn": "Pottery",
+    },
     {"icon": Icons.watch_outlined, "titleAr": "مجوهرات", "titleEn": "Jewelry"},
     {"icon": Icons.chair_outlined, "titleAr": "خشب", "titleEn": "Wood"},
   ];
@@ -100,7 +108,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
       "jobs": "52",
       "craftAr": "أعمال الخشب والأثاث",
       "craftEn": "Woodworking",
-      "image": "assets/images/plate.jpg"
+      "image": "assets/images/plate.jpg",
     },
     {
       "nameAr": "فاطمة محمود",
@@ -109,7 +117,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
       "jobs": "74",
       "craftAr": "خياطة وتطريز",
       "craftEn": "Crochet & Knitting",
-      "image": "assets/images/crochet.jpg"
+      "image": "assets/images/crochet.jpg",
     },
     {
       "nameAr": "إياد الكردي",
@@ -118,8 +126,8 @@ class _ClientDashboardState extends State<ClientDashboard> {
       "jobs": "31",
       "craftAr": "الفخار والخزف",
       "craftEn": "Pottery & Ceramics",
-      "image": "assets/images/pottery.jpg"
-    }
+      "image": "assets/images/pottery.jpg",
+    },
   ];
 
   // Mock products feed — replace with real API data later.
@@ -178,7 +186,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
   List<Map<String, dynamic>> get filteredProducts {
     const tags = ['popular', 'new', 'recommended'];
     final activeTag = tags[productTabIndex];
-    return products.where((p) => (p["tags"] as List).contains(activeTag)).toList();
+    return products
+        .where((p) => (p["tags"] as List).contains(activeTag))
+        .toList();
   }
 
   // Open AI Order Creator Bottom Sheet
@@ -201,8 +211,8 @@ class _ClientDashboardState extends State<ClientDashboard> {
                 ),
                 decoration: BoxDecoration(
                   color: isDarkMode
-                      ? const Color(0xFF0D1420).withOpacity(0.9)
-                      : Colors.white.withOpacity(0.9),
+                      ? const Color(0xFF0D1420).withValues(alpha: 0.9)
+                      : Colors.white.withValues(alpha: 0.9),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -210,7 +220,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                   border: Border.all(color: cardBorderColor, width: 1.5),
                 ),
                 child: Directionality(
-                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: isArabic
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,16 +265,23 @@ class _ClientDashboardState extends State<ClientDashboard> {
                           hintText: isArabic
                               ? "أحتاج إلى سجادة صوفية صغيرة بنقش تقليدي أحمر..."
                               : "I need a small wool rug with red traditional patterns...",
-                          hintStyle: TextStyle(color: secondaryTextColor.withOpacity(0.5)),
+                          hintStyle: TextStyle(
+                            color: secondaryTextColor.withValues(alpha: 0.5),
+                          ),
                           filled: true,
-                          fillColor: isDarkMode ? Colors.white10 : Colors.black12,
+                          fillColor: isDarkMode
+                              ? Colors.white10
+                              : Colors.black12,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide.none,
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
-                            borderSide: const BorderSide(color: Color(0xFFD4A017), width: 1),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD4A017),
+                              width: 1,
+                            ),
                           ),
                         ),
                       ),
@@ -272,23 +291,30 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD4A017).withOpacity(0.1),
+                          color: const Color(0xFFD4A017).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: const Color(0xFFD4A017).withOpacity(0.3),
+                            color: const Color(
+                              0xFFD4A017,
+                            ).withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.auto_awesome, color: Color(0xFFD4A017)),
+                            const Icon(
+                              Icons.auto_awesome,
+                              color: Color(0xFFD4A017),
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    isArabic ? "السعر الموصى به" : "Recommended Price Range",
+                                    isArabic
+                                        ? "السعر الموصى به"
+                                        : "Recommended Price Range",
                                     style: TextStyle(
                                       color: primaryTextColor,
                                       fontSize: 12,
@@ -297,7 +323,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    isArabic ? "45 - 60 دينار أردني" : "45 - 60 JOD",
+                                    isArabic
+                                        ? "45 - 60 دينار أردني"
+                                        : "45 - 60 JOD",
                                     style: const TextStyle(
                                       color: Color(0xFFD4A017),
                                       fontSize: 16,
@@ -319,10 +347,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(26),
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFF7B500),
-                              Color(0xFFD89A00),
-                            ],
+                            colors: [Color(0xFFF7B500), Color(0xFFD89A00)],
                           ),
                         ),
                         child: ElevatedButton(
@@ -399,7 +424,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                   border: Border.all(color: cardBorderColor, width: 1.5),
                 ),
                 child: Directionality(
-                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: isArabic
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -439,7 +466,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                           spacing: 8,
                           runSpacing: 8,
                           children: List.generate(categories.length, (index) {
-                            if (index == 0) return const SizedBox.shrink(); // skip "All"
+                            if (index == 0) {
+                              return const SizedBox.shrink(); // skip "All"
+                            }
                             final cat = categories[index];
                             final selected = tempCategories.contains(index);
                             return GestureDetector(
@@ -453,16 +482,25 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 9,
+                                ),
                                 decoration: BoxDecoration(
                                   color: selected
                                       ? const Color(0xFFD4A017)
                                       : (isDarkMode
-                                      ? Colors.white.withOpacity(0.04)
-                                      : Colors.black.withOpacity(0.03)),
+                                            ? Colors.white.withValues(
+                                                alpha: 0.04,
+                                              )
+                                            : Colors.black.withValues(
+                                                alpha: 0.03,
+                                              )),
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
-                                    color: selected ? const Color(0xFFD4A017) : cardBorderColor,
+                                    color: selected
+                                        ? const Color(0xFFD4A017)
+                                        : cardBorderColor,
                                   ),
                                 ),
                                 child: Row(
@@ -473,17 +511,23 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                       size: 15,
                                       color: selected
                                           ? Colors.black
-                                          : (isDarkMode ? Colors.white70 : Colors.black87),
+                                          : (isDarkMode
+                                                ? Colors.white70
+                                                : Colors.black87),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      isArabic ? cat["titleAr"] : cat["titleEn"],
+                                      isArabic
+                                          ? cat["titleAr"]
+                                          : cat["titleEn"],
                                       style: TextStyle(
                                         fontSize: 12.5,
                                         fontWeight: FontWeight.bold,
                                         color: selected
                                             ? Colors.black
-                                            : (isDarkMode ? Colors.white70 : Colors.black87),
+                                            : (isDarkMode
+                                                  ? Colors.white70
+                                                  : Colors.black87),
                                       ),
                                     ),
                                   ],
@@ -521,7 +565,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                             activeTrackColor: const Color(0xFFD4A017),
                             inactiveTrackColor: cardBorderColor,
                             thumbColor: const Color(0xFFD4A017),
-                            overlayColor: const Color(0xFFD4A017).withOpacity(0.15),
+                            overlayColor: const Color(
+                              0xFFD4A017,
+                            ).withValues(alpha: 0.15),
                           ),
                           child: RangeSlider(
                             min: 0,
@@ -554,7 +600,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                             return GestureDetector(
                               onTap: () {
                                 setModalState(() {
-                                  tempMinRating = (tempMinRating == starValue) ? 0 : starValue.toDouble();
+                                  tempMinRating = (tempMinRating == starValue)
+                                      ? 0
+                                      : starValue.toDouble();
                                 });
                               },
                               child: Padding(
@@ -584,10 +632,34 @@ class _ClientDashboardState extends State<ClientDashboard> {
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            _sortChip(tempSortBy, 'rating', isArabic ? "الأعلى تقييماً" : "Top Rated", setModalState, (v) => tempSortBy = v),
-                            _sortChip(tempSortBy, 'price_low', isArabic ? "السعر: الأقل" : "Price: Low to High", setModalState, (v) => tempSortBy = v),
-                            _sortChip(tempSortBy, 'price_high', isArabic ? "السعر: الأعلى" : "Price: High to Low", setModalState, (v) => tempSortBy = v),
-                            _sortChip(tempSortBy, 'newest', isArabic ? "الأحدث" : "Newest", setModalState, (v) => tempSortBy = v),
+                            _sortChip(
+                              tempSortBy,
+                              'rating',
+                              isArabic ? "الأعلى تقييماً" : "Top Rated",
+                              setModalState,
+                              (v) => tempSortBy = v,
+                            ),
+                            _sortChip(
+                              tempSortBy,
+                              'price_low',
+                              isArabic ? "السعر: الأقل" : "Price: Low to High",
+                              setModalState,
+                              (v) => tempSortBy = v,
+                            ),
+                            _sortChip(
+                              tempSortBy,
+                              'price_high',
+                              isArabic ? "السعر: الأعلى" : "Price: High to Low",
+                              setModalState,
+                              (v) => tempSortBy = v,
+                            ),
+                            _sortChip(
+                              tempSortBy,
+                              'newest',
+                              isArabic ? "الأحدث" : "Newest",
+                              setModalState,
+                              (v) => tempSortBy = v,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 28),
@@ -598,7 +670,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                             Expanded(
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
                                   side: BorderSide(color: cardBorderColor),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(26),
@@ -614,7 +688,10 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                 },
                                 child: Text(
                                   isArabic ? "إعادة تعيين" : "Reset",
-                                  style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: primaryTextColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -626,7 +703,10 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(26),
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFFF7B500), Color(0xFFD89A00)],
+                                    colors: [
+                                      Color(0xFFF7B500),
+                                      Color(0xFFD89A00),
+                                    ],
                                   ),
                                 ),
                                 child: ElevatedButton(
@@ -644,7 +724,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                     Navigator.pop(context);
                                   },
                                   child: Text(
-                                    isArabic ? "تطبيق الفلاتر" : "Apply Filters",
+                                    isArabic
+                                        ? "تطبيق الفلاتر"
+                                        : "Apply Filters",
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -669,12 +751,12 @@ class _ClientDashboardState extends State<ClientDashboard> {
   }
 
   Widget _sortChip(
-      String currentValue,
-      String value,
-      String label,
-      void Function(void Function()) setModalState,
-      void Function(String) onSelect,
-      ) {
+    String currentValue,
+    String value,
+    String label,
+    void Function(void Function()) setModalState,
+    void Function(String) onSelect,
+  ) {
     final selected = currentValue == value;
     return GestureDetector(
       onTap: () => setModalState(() => onSelect(value)),
@@ -683,16 +765,22 @@ class _ClientDashboardState extends State<ClientDashboard> {
         decoration: BoxDecoration(
           color: selected
               ? const Color(0xFFD4A017)
-              : (isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.03)),
+              : (isDarkMode
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.black.withValues(alpha: 0.03)),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: selected ? const Color(0xFFD4A017) : cardBorderColor),
+          border: Border.all(
+            color: selected ? const Color(0xFFD4A017) : cardBorderColor,
+          ),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.bold,
-            color: selected ? Colors.black : (isDarkMode ? Colors.white70 : Colors.black87),
+            color: selected
+                ? Colors.black
+                : (isDarkMode ? Colors.white70 : Colors.black87),
           ),
         ),
       ),
@@ -733,7 +821,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
 
                   // Header title
                   Text(
-                    isArabic ? "ابحث عن الفن الجميل" : "Explore Beautiful Craft",
+                    isArabic
+                        ? "ابحث عن الفن الجميل"
+                        : "Explore Beautiful Craft",
                     style: GoogleFonts.arefRuqaa(
                       color: primaryTextColor,
                       fontSize: 26,
@@ -742,11 +832,10 @@ class _ClientDashboardState extends State<ClientDashboard> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    isArabic ? "تواصل مع أمهر الحرفيين في منطقتك" : "Connect with the finest local craftsmen",
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 14.5,
-                    ),
+                    isArabic
+                        ? "تواصل مع أمهر الحرفيين في منطقتك"
+                        : "Connect with the finest local craftsmen",
+                    style: TextStyle(color: secondaryTextColor, fontSize: 14.5),
                   ),
                   const SizedBox(height: 20),
 
@@ -756,18 +845,35 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+                            color: isDarkMode
+                                ? Colors.white.withValues(alpha: 0.04)
+                                : Colors.black.withValues(alpha: 0.02),
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: cardBorderColor, width: 1),
+                            border: Border.all(
+                              color: cardBorderColor,
+                              width: 1,
+                            ),
                           ),
                           child: TextField(
                             style: TextStyle(color: primaryTextColor),
                             decoration: InputDecoration(
-                              hintText: isArabic ? "ابحث عن حرفة أو حرفي..." : "Search for a craft or craftsman...",
-                              hintStyle: TextStyle(color: secondaryTextColor.withOpacity(0.5)),
-                              prefixIcon: Icon(Icons.search, color: secondaryTextColor),
+                              hintText: isArabic
+                                  ? "ابحث عن حرفة أو حرفي..."
+                                  : "Search for a craft or craftsman...",
+                              hintStyle: TextStyle(
+                                color: secondaryTextColor.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: secondaryTextColor,
+                              ),
                               border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
                             ),
                           ),
                         ),
@@ -785,15 +891,23 @@ class _ClientDashboardState extends State<ClientDashboard> {
                               decoration: BoxDecoration(
                                 color: activeFilterCount > 0
                                     ? const Color(0xFFD4A017)
-                                    : (isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02)),
+                                    : (isDarkMode
+                                          ? Colors.white.withValues(alpha: 0.04)
+                                          : Colors.black.withValues(
+                                              alpha: 0.02,
+                                            )),
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color: activeFilterCount > 0 ? const Color(0xFFD4A017) : cardBorderColor,
+                                  color: activeFilterCount > 0
+                                      ? const Color(0xFFD4A017)
+                                      : cardBorderColor,
                                 ),
                               ),
                               child: Icon(
                                 Icons.tune,
-                                color: activeFilterCount > 0 ? Colors.black : topIconColor,
+                                color: activeFilterCount > 0
+                                    ? Colors.black
+                                    : topIconColor,
                               ),
                             ),
                             if (activeFilterCount > 0)
@@ -806,7 +920,10 @@ class _ClientDashboardState extends State<ClientDashboard> {
                                     color: Colors.redAccent,
                                     shape: BoxShape.circle,
                                   ),
-                                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 18,
+                                    minHeight: 18,
+                                  ),
                                   child: Text(
                                     "$activeFilterCount",
                                     textAlign: TextAlign.center,
@@ -834,7 +951,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final cat = categories[index];
-                        final isSelected = selectedFilterIndex == index || (selectedFilterIndex == null && index == 0);
+                        final isSelected =
+                            selectedFilterIndex == index ||
+                            (selectedFilterIndex == null && index == 0);
                         return _buildCategoryChip(
                           icon: cat["icon"],
                           title: isArabic ? cat["titleAr"] : cat["titleEn"],
@@ -905,7 +1024,10 @@ class _ClientDashboardState extends State<ClientDashboard> {
                   // Tab switcher
                   Row(
                     children: [
-                      _buildProductTab(0, isArabic ? "الأكثر طلباً" : "Popular"),
+                      _buildProductTab(
+                        0,
+                        isArabic ? "الأكثر طلباً" : "Popular",
+                      ),
                       const SizedBox(width: 10),
                       _buildProductTab(1, isArabic ? "جديد" : "New"),
                       const SizedBox(width: 10),
@@ -921,12 +1043,13 @@ class _ClientDashboardState extends State<ClientDashboard> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: filteredProducts.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      childAspectRatio: 0.78,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.78,
+                        ),
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
                       return _buildProductCard(product);
@@ -951,16 +1074,22 @@ class _ClientDashboardState extends State<ClientDashboard> {
         decoration: BoxDecoration(
           color: isSelected
               ? const Color(0xFFD4A017)
-              : (isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02)),
+              : (isDarkMode
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.black.withValues(alpha: 0.02)),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: isSelected ? const Color(0xFFD4A017) : cardBorderColor),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFD4A017) : cardBorderColor,
+          ),
         ),
         child: Text(
           title,
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.black : (isDarkMode ? Colors.white70 : Colors.black87),
+            color: isSelected
+                ? Colors.black
+                : (isDarkMode ? Colors.white70 : Colors.black87),
           ),
         ),
       ),
@@ -972,10 +1101,12 @@ class _ClientDashboardState extends State<ClientDashboard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: cardBorderColor, width: 1.5),
-        color: isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+        color: isDarkMode
+            ? Colors.white.withValues(alpha: 0.04)
+            : Colors.black.withValues(alpha: 0.02),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -990,7 +1121,7 @@ class _ClientDashboardState extends State<ClientDashboard> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFD4A017).withOpacity(0.12),
+                color: const Color(0xFFD4A017).withValues(alpha: 0.12),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -1034,7 +1165,11 @@ class _ClientDashboardState extends State<ClientDashboard> {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Color(0xFFF7B500), size: 13),
+                        const Icon(
+                          Icons.star,
+                          color: Color(0xFFF7B500),
+                          size: 13,
+                        ),
                         const SizedBox(width: 3),
                         Text(
                           product["rating"],
@@ -1074,7 +1209,9 @@ class _ClientDashboardState extends State<ClientDashboard> {
         decoration: BoxDecoration(
           color: isSelected
               ? const Color(0xFFD4A017)
-              : (isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02)),
+              : (isDarkMode
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.black.withValues(alpha: 0.02)),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? const Color(0xFFD4A017) : cardBorderColor,
@@ -1120,10 +1257,12 @@ class _ClientDashboardState extends State<ClientDashboard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: cardBorderColor, width: 1.5),
-        color: isDarkMode ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.02),
+        color: isDarkMode
+            ? Colors.white.withValues(alpha: 0.04)
+            : Colors.black.withValues(alpha: 0.02),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1177,7 +1316,11 @@ class _ClientDashboardState extends State<ClientDashboard> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Color(0xFFF7B500), size: 14),
+                            const Icon(
+                              Icons.star,
+                              color: Color(0xFFF7B500),
+                              size: 14,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               rating,

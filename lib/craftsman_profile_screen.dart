@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_category_screen.dart';
 import 'main.dart';
 import 'chat_detail_screen.dart';
+import 'add_product_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CraftsmanProfileScreen — حساب الحرفي
@@ -137,9 +138,17 @@ class _CraftsmanProfileScreenState extends State<CraftsmanProfileScreen> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.edit_outlined, color: dim),
-                  onPressed: () {},
+                Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit_outlined, color: dim),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add_box_outlined, color: Colors.purpleAccent),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AddProductScreen(isArabic: widget.isArabic, isDarkMode: widget.isDarkMode))),
+                    )
+                  ],
                 )
               ],
             ),
@@ -391,6 +400,38 @@ class _CraftsmanProfileScreenState extends State<CraftsmanProfileScreen> {
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   children: [
+                    // AI Review Sentiment Summary
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 24),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.purpleAccent.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                t('خلاصة الذكاء الاصطناعي', 'AI Review Sentiment'),
+                                style: GoogleFonts.cairo(color: Colors.purpleAccent, fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.isArabic
+                                ? 'معظم العملاء يمدحون دقة العمل وسرعة التنفيذ والاحترافية العالية، لكن البعض اقترح توفير ألوان أو خيارات إضافية للمنتجات.'
+                                : 'Most clients praise the precision, speed, and high professionalism, but a few suggested offering more colors or options.',
+                            style: GoogleFonts.cairo(color: text, fontSize: 13, height: 1.5),
+                          ),
+                        ],
+                      ),
+                    ),
                     _reviewTile(t('نور الدين', 'Nour El-Din'), 5, t('عمل رائع وسريع ومحترف جداً! سأتعامل معه مرة أخرى بالتأكيد.', 'Excellent, fast and very professional work! Will definitely work with them again.'), '2026-01-04'),
                     _reviewTile(t('ليلى الحسن', 'Layla Al-Hassan'), 4, t('ممتاز، النتيجة أفضل من المتوقع. شكراً جزيلاً.', 'Excellent, the result was better than expected. Thank you so much.'), '2026-12-27'),
                     _reviewTile(t('خالد المنصور', 'Khalid Al-Mansour'), 5, t('خدمة احترافية من أول لآخر. الدقة في العمل تشهد له.', 'Professional service from start to finish. The precision in work speaks for itself.'), '2026-12-18'),

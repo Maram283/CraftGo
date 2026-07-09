@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'chat_detail_screen.dart';
+import 'craftsman_review_customer_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CraftsmanOrdersScreen — إدارة الطلبات الواردة للحرفي
@@ -699,59 +700,92 @@ class _CraftsmanOrdersScreenState extends State<CraftsmanOrdersScreen>
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: border),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF4CAF50).withValues(alpha: 0.12),
-            ),
-            child: const Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 24),
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.12),
+                ),
+                child: const Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(t(order['service'], order['serviceEn']),
+                        style: GoogleFonts.cairo(color: text, fontWeight: FontWeight.bold)),
+                    GestureDetector(
+                      onTap: () => _showClientProfileSheet(
+                        context,
+                        t(order['clientName'], order['clientNameEn']),
+                        t('نابلس، فلسطين', 'Nablus, Palestine'),
+                      ),
+                      child: Text(
+                        t(order['clientName'], order['clientNameEn']),
+                        style: GoogleFonts.cairo(
+                          color: dim,
+                          fontSize: 12,
+                          decoration: TextDecoration.underline,
+                          decorationColor: accent,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: List.generate(5, (i) => Icon(
+                        i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+                        size: 14,
+                        color: const Color(0xFFF7B500),
+                      )),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(order['price'],
+                      style: GoogleFonts.cairo(color: const Color(0xFF4CAF50), fontWeight: FontWeight.bold)),
+                  Text(localizeNumber(order['completedDate']),
+                      style: GoogleFonts.cairo(color: dim, fontSize: 11)),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(t(order['service'], order['serviceEn']),
-                    style: GoogleFonts.cairo(color: text, fontWeight: FontWeight.bold)),
-                GestureDetector(
-                  onTap: () => _showClientProfileSheet(
-                    context,
-                    t(order['clientName'], order['clientNameEn']),
-                    t('نابلس، فلسطين', 'Nablus, Palestine'),
-                  ),
-                  child: Text(
-                    t(order['clientName'], order['clientNameEn']),
-                    style: GoogleFonts.cairo(
-                      color: dim,
-                      fontSize: 12,
-                      decoration: TextDecoration.underline,
-                      decorationColor: accent,
+          const SizedBox(height: 12),
+          Divider(color: border, height: 1),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CraftsmanReviewCustomerScreen(
+                      isArabic: widget.isArabic,
+                      isDarkMode: widget.isDarkMode,
+                      customerName: t(order['clientName'], order['clientNameEn']),
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(5, (i) => Icon(
-                    i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
-                    size: 14,
-                    color: const Color(0xFFF7B500),
-                  )),
-                ),
-              ],
+                );
+              },
+              icon: const Icon(Icons.star_rate, size: 18, color: Color(0xFFD4A017)),
+              label: Text(
+                t('تقييم الزبون', 'Rate Customer'),
+                style: TextStyle(color: text, fontWeight: FontWeight.bold),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: border),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(order['price'],
-                  style: GoogleFonts.cairo(color: const Color(0xFF4CAF50), fontWeight: FontWeight.bold)),
-              Text(localizeNumber(order['completedDate']),
-                  style: GoogleFonts.cairo(color: dim, fontSize: 11)),
-            ],
           ),
         ],
       ),
@@ -866,7 +900,42 @@ class _CraftsmanOrdersScreenState extends State<CraftsmanOrdersScreen>
               const SizedBox(height: 4),
               Text(t('لطلب: ${order['service']}', 'For: ${order['serviceEn']}'),
                   style: GoogleFonts.cairo(color: dim, fontSize: 13)),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accent.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.auto_awesome, color: accent),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t('تسعير ذكي مقترح (AI)', 'AI Suggested Price'),
+                            style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            t('بناءً على طلبات مشابهة، السعر المقترح هو:', 'Based on similar requests, fair price is:'),
+                            style: TextStyle(color: dim, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      '${int.parse(order['budget'].toString().replaceAll(RegExp(r'[^0-9]'), '')) - 20} - ${int.parse(order['budget'].toString().replaceAll(RegExp(r'[^0-9]'), '')) + 30} JD',
+                      style: GoogleFonts.cairo(color: const Color(0xFF4CAF50), fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,

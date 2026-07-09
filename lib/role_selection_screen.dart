@@ -2,9 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'craftsman_category_screen.dart';
-import 'admin_shell.dart';
 import 'customer_login_screen.dart';
 import 'main_shell.dart';
+import 'admin_login_screen.dart';
+import 'exhibition_owner_login_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   final bool isArabic;
@@ -67,49 +68,61 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
     parent: _entranceController,
     curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
   );
-  Animation<Offset> get _titleSlide => Tween<Offset>(
-    begin: const Offset(0, 0.2),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(
-    parent: _entranceController,
-    curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
-  ));
+  Animation<Offset> get _titleSlide =>
+      Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _entranceController,
+          curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
+        ),
+      );
 
   Animation<double> get _card1Fade => CurvedAnimation(
     parent: _entranceController,
     curve: const Interval(0.2, 0.6, curve: Curves.easeOut),
   );
-  Animation<Offset> get _card1Slide => Tween<Offset>(
-    begin: const Offset(0, 0.15),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(
-    parent: _entranceController,
-    curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
-  ));
+  Animation<Offset> get _card1Slide =>
+      Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _entranceController,
+          curve: const Interval(0.2, 0.6, curve: Curves.easeOutCubic),
+        ),
+      );
 
   Animation<double> get _card2Fade => CurvedAnimation(
     parent: _entranceController,
     curve: const Interval(0.35, 0.75, curve: Curves.easeOut),
   );
-  Animation<Offset> get _card2Slide => Tween<Offset>(
-    begin: const Offset(0, 0.15),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(
-    parent: _entranceController,
-    curve: const Interval(0.35, 0.75, curve: Curves.easeOutCubic),
-  ));
+  Animation<Offset> get _card2Slide =>
+      Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _entranceController,
+          curve: const Interval(0.35, 0.75, curve: Curves.easeOutCubic),
+        ),
+      );
 
   Animation<double> get _card3Fade => CurvedAnimation(
     parent: _entranceController,
     curve: const Interval(0.5, 0.9, curve: Curves.easeOut),
   );
-  Animation<Offset> get _card3Slide => Tween<Offset>(
-    begin: const Offset(0, 0.15),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(
+  Animation<Offset> get _card3Slide =>
+      Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _entranceController,
+          curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
+        ),
+      );
+
+  Animation<double> get _card4Fade => CurvedAnimation(
     parent: _entranceController,
-    curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
-  ));
+    curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
+  );
+  Animation<Offset> get _card4Slide =>
+      Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _entranceController,
+          curve: const Interval(0.65, 1.0, curve: Curves.easeOutCubic),
+        ),
+      );
 
   // Colors mapping
   Color get backgroundColor =>
@@ -117,11 +130,11 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
 
   Color get primaryTextColor => isDarkMode ? Colors.white : Colors.black87;
 
-  Color get secondaryTextColor =>
-      isDarkMode ? Colors.white70 : Colors.black54;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
 
-  Color get cardBorderColor =>
-      isDarkMode ? Colors.white.withOpacity(0.12) : Colors.black.withOpacity(0.08);
+  Color get cardBorderColor => isDarkMode
+      ? Colors.white.withValues(alpha: 0.12)
+      : Colors.black.withValues(alpha: 0.08);
 
   Color get topIconColor => isDarkMode ? Colors.white : Colors.black87;
 
@@ -165,7 +178,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                     children: [
                       // Back Button styled like other glass buttons
                       _topBarButton(
-                        icon: isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+                        icon: isArabic
+                            ? Icons.arrow_forward_ios
+                            : Icons.arrow_back_ios,
                         label: "",
                         onTap: () => Navigator.pop(context),
                       ),
@@ -217,7 +232,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                                     primaryTextColor,
                                     const Color(0xFFD4A017),
                                     Colors.white,
-                                    primaryTextColor
+                                    primaryTextColor,
                                   ],
                                   begin: Alignment(-1.0 + dx * 2, -0.5),
                                   end: Alignment(1.0 + dx * 2, 0.5),
@@ -225,7 +240,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                                 ).createShader(bounds);
                               },
                               child: Text(
-                                isArabic ? "أهلاً بك في عالم الحرف" : "Welcome to the Craft World",
+                                isArabic
+                                    ? "أهلاً بك في عالم الحرف"
+                                    : "Welcome to the Craft World",
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.arefRuqaa(
                                   color: Colors.white,
@@ -306,7 +323,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                     },
                     child: RoleCard(
                       icon: Icons.search_outlined,
-                      title: isArabic ? "أبحث عن حرفي" : "I am looking for a Craftsman",
+                      title: isArabic
+                          ? "أبحث عن حرفي"
+                          : "I am looking for a Craftsman",
                       description: isArabic
                           ? "تصفح أمهر الحرفيين في منطقتك، واطلب خدمات تناسب احتياجاتك."
                           : "Browse the most skilled craftsmen in your area and request matching services.",
@@ -372,7 +391,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                     },
                     child: RoleCard(
                       icon: Icons.admin_panel_settings_outlined,
-                      title: isArabic ? "إدارة النظام" : "System Administration",
+                      title: isArabic
+                          ? "إدارة النظام"
+                          : "System Administration",
                       description: isArabic
                           ? "الدخول بصلاحيات الأدمن لإدارة التطبيق والتحكم بالمستخدمين."
                           : "Access with admin privileges to manage the application and users.",
@@ -384,7 +405,48 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AdminShell(
+                            builder: (context) => AdminLoginScreen(
+                              isArabic: isArabic,
+                              isDarkMode: isDarkMode,
+                              onToggleLanguage: toggleLanguage,
+                              onToggleTheme: toggleTheme,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Exhibition Owner Card
+                  AnimatedBuilder(
+                    animation: _entranceController,
+                    builder: (context, child) {
+                      return FadeTransition(
+                        opacity: _card4Fade,
+                        child: SlideTransition(
+                          position: _card4Slide,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: RoleCard(
+                      icon: Icons.museum_outlined,
+                      title: isArabic ? "صاحب معرض" : "Exhibition Owner",
+                      description: isArabic
+                          ? "أنشئ معارض حرفية ودعوة الحرفيين للمشاركة فيها وإدارة الطلبات بذكاء."
+                          : "Create craft exhibitions, invite artisans, and manage participation requests smartly.",
+                      isDarkMode: isDarkMode,
+                      primaryTextColor: primaryTextColor,
+                      secondaryTextColor: secondaryTextColor,
+                      cardBorderColor: cardBorderColor,
+                      accentColor: const Color(0xFF7B5EA7),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExhibitionOwnerLoginScreen(
                               isArabic: isArabic,
                               isDarkMode: isDarkMode,
                               onToggleLanguage: toggleLanguage,
@@ -453,6 +515,8 @@ class RoleCard extends StatefulWidget {
   final Color secondaryTextColor;
   final Color cardBorderColor;
 
+  final Color? accentColor;
+
   const RoleCard({
     super.key,
     required this.icon,
@@ -463,6 +527,7 @@ class RoleCard extends StatefulWidget {
     required this.primaryTextColor,
     required this.secondaryTextColor,
     required this.cardBorderColor,
+    this.accentColor,
   });
 
   @override
@@ -496,7 +561,11 @@ class _RoleCardState extends State<RoleCard> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(0, _isHovered && !_isPressed ? -8 : 0, 0),
+            transform: Matrix4.translationValues(
+              0,
+              _isHovered && !_isPressed ? -8 : 0,
+              0,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
@@ -508,10 +577,10 @@ class _RoleCardState extends State<RoleCard> {
               boxShadow: [
                 BoxShadow(
                   color: _isHovered
-                      ? const Color(0xFFD4A017).withOpacity(0.25)
+                      ? const Color(0xFFD4A017).withValues(alpha: 0.25)
                       : (widget.isDarkMode
-                      ? const Color(0xFFD4A017).withOpacity(0.03)
-                      : Colors.black.withOpacity(0.04)),
+                            ? const Color(0xFFD4A017).withValues(alpha: 0.03)
+                            : Colors.black.withValues(alpha: 0.04)),
                   blurRadius: _isHovered ? 25 : 15,
                   spreadRadius: _isHovered ? 1 : 0,
                   offset: _isHovered ? const Offset(0, 10) : const Offset(0, 6),
@@ -530,13 +599,13 @@ class _RoleCardState extends State<RoleCard> {
                       end: Alignment.bottomRight,
                       colors: widget.isDarkMode
                           ? [
-                        Colors.white.withOpacity(0.06),
-                        Colors.white.withOpacity(0.015),
-                      ]
+                              Colors.white.withValues(alpha: 0.06),
+                              Colors.white.withValues(alpha: 0.015),
+                            ]
                           : [
-                        Colors.black.withOpacity(0.03),
-                        Colors.black.withOpacity(0.005),
-                      ],
+                              Colors.black.withValues(alpha: 0.03),
+                              Colors.black.withValues(alpha: 0.005),
+                            ],
                     ),
                   ),
                   child: Row(
@@ -548,17 +617,17 @@ class _RoleCardState extends State<RoleCard> {
                         height: 55,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [
-                              Color(0xFFF7B500),
-                              Color(0xFFD89A00),
+                              widget.accentColor ?? const Color(0xFFF7B500),
+                              (widget.accentColor ?? const Color(0xFFD89A00)).withValues(alpha: 0.8),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFF7B500).withOpacity(0.3),
+                              color: (widget.accentColor ?? const Color(0xFFF7B500)).withValues(alpha: 0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
