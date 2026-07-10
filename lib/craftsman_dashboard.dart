@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'craftsman_orders_screen.dart';
+import 'craftsman_exhibitions_screen.dart';
+import 'explore_exhibitions_screen.dart';
+
 class CraftsmanDashboard extends StatefulWidget {
   final bool isArabic;
   final bool isDarkMode;
@@ -551,21 +555,62 @@ class _CraftsmanDashboardState extends State<CraftsmanDashboard> {
                             ),
                             const SizedBox(height: 18),
 
-                            // Dynamic tag list
-                            Row(
-                              children: [
-                                _buildTrendChip(
-                                  icon: Icons.whatshot,
-                                  label: isArabic ? 'طلب مرتفع' : 'Trending',
-                                  color: Colors.redAccent,
-                                ),
-                                const SizedBox(width: 8),
-                                _buildTrendChip(
-                                  icon: Icons.location_on,
-                                  label: widget.city,
-                                  color: Colors.blueAccent,
-                                ),
-                              ],
+                            // Dynamic tag list & Actions
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  _buildTrendChip(
+                                    icon: Icons.whatshot,
+                                    label: isArabic ? 'طلب مرتفع' : 'Trending',
+                                    color: Colors.redAccent,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildTrendChip(
+                                    icon: Icons.location_on,
+                                    label: widget.city,
+                                    color: Colors.blueAccent,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => CraftsmanExhibitionsScreen(
+                                            isArabic: widget.isArabic,
+                                            isDarkMode: widget.isDarkMode,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildTrendChip(
+                                      icon: Icons.festival,
+                                      label: isArabic ? 'معارضي' : 'My Exhibitions',
+                                      color: const Color(0xFFD4A017),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ExploreExhibitionsScreen(
+                                            isArabic: widget.isArabic,
+                                            isDarkMode: widget.isDarkMode,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildTrendChip(
+                                      icon: Icons.search,
+                                      label: isArabic ? 'استكشف المعارض' : 'Explore',
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const Divider(height: 24, color: Colors.white10),
 

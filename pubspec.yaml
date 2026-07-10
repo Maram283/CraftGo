@@ -40,6 +40,9 @@ dependencies:
   google_fonts: ^8.1.0
   image_picker: any
   flutter_colorpicker: any
+  http: ^1.6.0
+  shared_preferences: ^2.5.5
+  socket_io_client: ^3.1.6
 
 dev_dependencies:
   flutter_test:

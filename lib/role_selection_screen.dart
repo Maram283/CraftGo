@@ -6,6 +6,8 @@ import 'customer_login_screen.dart';
 import 'main_shell.dart';
 import 'admin_login_screen.dart';
 import 'exhibition_owner_login_screen.dart';
+import 'services/api_service.dart';
+import 'home_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   final bool isArabic;
@@ -39,6 +41,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
     super.initState();
     isArabic = widget.isArabic;
     isDarkMode = widget.isDarkMode;
+    
+    _checkAutoLogin();
 
     // Entrance Animation (Slide + Fade)
     _entranceController = AnimationController(
@@ -54,6 +58,16 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen>
 
     // Start entrance animation immediately
     _entranceController.forward();
+  }
+
+  Future<void> _checkAutoLogin() async {
+    final token = await ApiService.getToken();
+    if (token != null && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
   }
 
   @override
