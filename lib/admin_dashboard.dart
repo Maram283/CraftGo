@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'chat_detail_screen.dart';
+import 'services/admin_service.dart';
 
 class AdminDashboard extends StatefulWidget {
   final bool isArabic;
@@ -42,6 +43,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   late List<Map<String, String>> verifications;
   late List<Map<String, String>> disputes;
+  Map<String, dynamic>? _stats;
+  bool _loading = true;
+
+  Future<void> _loadStats() async {
+    final data = await AdminService.getStats();
+    if (mounted) {
+      setState(() {
+        _stats = data?['stats'];
+        _loading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -71,6 +84,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         "partiesEn": "Mansour (Client) 🆚 Kamal (Craftsman)"
       }
     ];
+    _loadStats();
   }
 
   @override
@@ -107,36 +121,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   const SizedBox(height: 30),
 
                   // Analytics Stats Grid (2 columns)
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.4,
-                    children: [
-                      _buildStatCard(
-                        title: widget.isArabic ? "ودائع الضمان" : "Escrow Deposits",
-                        value: "14,350 JOD",
-                        icon: Icons.lock_clock_outlined,
-                      ),
-                      _buildStatCard(
-                        title: widget.isArabic ? "عمولة النظام" : "Platform Income",
-                        value: "1,435 JOD",
-                        icon: Icons.account_balance_outlined,
-                      ),
-                      _buildStatCard(
-                        title: widget.isArabic ? "حسابات الحرفيين" : "Craftsmen count",
-                        value: "124",
-                        icon: Icons.engineering_outlined,
-                      ),
-                      _buildStatCard(
-                        title: widget.isArabic ? "الزبائن النشطين" : "Active Clients",
-                        value: "830",
-                        icon: Icons.people_outline,
-                      ),
-                    ],
-                  ),
+                  _loading
+                      ? const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: Color(0xFFD4A017))))
+                      : GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1.4,
+                          children: [
+                            _buildStatCard(
+                              title: widget.isArabic ? "إجمالي الإيرادات" : "Total Revenue",
+                              value: "${_stats?['revenue'] ?? 0} JOD",
+                              icon: Icons.lock_clock_outlined,
+                            ),
+                            _buildStatCard(
+                              title: widget.isArabic ? "إجمالي الطلبات" : "Total Orders",
+                              value: "${_stats?['totalOrders'] ?? 0}",
+                              icon: Icons.account_balance_outlined,
+                            ),
+                            _buildStatCard(
+                              title: widget.isArabic ? "حسابات الحرفيين" : "Craftsmen count",
+                              value: "${_stats?['roles']?['craftsman'] ?? 0}",
+                              icon: Icons.engineering_outlined,
+                            ),
+                            _buildStatCard(
+                              title: widget.isArabic ? "الزبائن النشطين" : "Active Clients",
+                              value: "${_stats?['roles']?['customer'] ?? 0}",
+                              icon: Icons.people_outline,
+                            ),
+                          ],
+                        ),
                   const SizedBox(height: 35),
 
                   // Section 1: Verification Requests

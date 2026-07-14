@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/exhibitions_service.dart';
 import 'services/api_service.dart';
@@ -391,6 +391,7 @@ class _ExploreExhibitionsScreenState extends State<ExploreExhibitionsScreen> {
                 final result = await ExhibitionsService.registerForExhibition(
                   ex['id'].toString(),
                   craftsmanId,
+                  'Crochet & Knitting', // Send the category to check capacity correctly
                 );
                 if (!mounted) return;
                 if (result != null) {

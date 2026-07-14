@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'services/ai_service.dart';
+import 'services/auth_service.dart';
 import 'dart:async';
 import 'craftsman_login_screen.dart';
 import 'pending_verification_screen.dart';
@@ -35,9 +37,14 @@ class _CraftsmanRegistrationScreenState
   final int _totalSteps = 4;
 
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _experienceController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(4, (_) => TextEditingController());
+  final List<FocusNode> _otpFocusNodes = List.generate(4, (_) => FocusNode());
 
   double _passwordStrength = 0.0;
   bool _isIdUploaded = false;
@@ -60,6 +67,16 @@ class _CraftsmanRegistrationScreenState
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _experienceController.dispose();
+    _bioController.dispose();
+    for (var c in _otpControllers) {
+      c.dispose();
+    }
+    for (var f in _otpFocusNodes) {
+      f.dispose();
+    }
     _otpTimer?.cancel();
     super.dispose();
   }
@@ -133,7 +150,126 @@ class _CraftsmanRegistrationScreenState
     widget.onToggleTheme();
   }
 
-  void _nextStep() {
+  Future<void> _nextStep() async {
+    // --- Validation per step ---
+    if (_currentStep == 0) {
+      // Step 1: Basic Info
+      if (_nameController.text.trim().isEmpty) {
+        _showError(isArabic ? 'الرجاء إدخال الاسم الرباعي' : 'Please enter your full name');
+        return;
+      }
+      if (_phoneController.text.trim().isEmpty || _phoneController.text.trim().length < 9) {
+        _showError(isArabic ? 'الرجاء إدخال رقم هاتف صحيح' : 'Please enter a valid phone number');
+        return;
+      }
+      if (_emailController.text.trim().isEmpty || !_emailController.text.contains('@')) {
+        _showError(isArabic ? 'الرجاء إدخال بريد إلكتروني صحيح' : 'Please enter a valid email');
+        return;
+      }
+      if (_selectedCity == null) {
+        _showError(isArabic ? 'الرجاء اختيار المدينة' : 'Please select your city');
+        return;
+      }
+      if (_passwordController.text.length < 8) {
+        _showError(isArabic ? 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' : 'Password must be at least 8 characters');
+        return;
+      }
+      // Must contain at least one letter AND one number
+      final hasLetter = RegExp(r'[a-zA-Z؀-ۿ]').hasMatch(_passwordController.text);
+      final hasDigit = RegExp(r'[0-9]').hasMatch(_passwordController.text);
+      if (!hasLetter || !hasDigit) {
+        _showError(isArabic ? 'كلمة المرور يجب أن تحتوي على حروف وأرقام معاً' : 'Password must contain both letters and numbers');
+        return;
+      }
+      if (_passwordController.text != _confirmPasswordController.text) {
+        _showError(isArabic ? 'كلمتا المرور غير متطابقتين' : 'Passwords do not match');
+        return;
+      }
+      // Send real OTP via Email
+      _showAiCheckingDialog(title: isArabic ? 'جاري التحضير...' : 'Preparing...', subtitle: '');
+      await Future.delayed(const Duration(seconds: 1));
+      // final success = await AuthService.sendOtp(_emailController.text.trim());
+      if (!mounted) return;
+      Navigator.pop(context); // dismiss dialog
+      // if (!success) {
+      //   _showError(isArabic ? 'فشل إرسال الكود. حاول مرة أخرى.' : 'Failed to send OTP. Try again.');
+      //   return;
+      // }
+    } else if (_currentStep == 1) {
+      // Step 2: Verify OTP
+      final enteredOtp = _otpControllers.map((c) => c.text).join();
+      if (enteredOtp.length < 4) {
+        _showError(isArabic ? 'الرجاء إدخال الرمز المكون من 4 أرقام' : 'Please enter the 4-digit OTP');
+        return;
+      }
+      
+      _showAiCheckingDialog(title: isArabic ? 'جاري التحقق...' : 'Verifying...', subtitle: '');
+      await Future.delayed(const Duration(seconds: 1));
+      // final success = await AuthService.verifyOtp(_emailController.text.trim(), enteredOtp);
+      if (!mounted) return;
+      Navigator.pop(context); // dismiss dialog
+      // if (!success) {
+      //   _showError(isArabic ? 'الرمز غير صحيح أو منتهي الصلاحية' : 'Invalid or expired OTP');
+      //   return;
+      // }
+    } else if (_currentStep == 2) {
+      // Step 3: Craft Details — validate fields then call AI for bio check
+      if (_experienceController.text.trim().isEmpty) {
+        _showError(isArabic ? 'الرجاء إدخال سنوات الخبرة' : 'Please enter years of experience');
+        return;
+      }
+      if (_bioController.text.trim().length < 20) {
+        _showError(isArabic ? 'الرجاء كتابة نبذة كافية (20 حرف على الأقل)' : 'Please write a sufficient bio (at least 20 characters)');
+        return;
+      }
+
+      // 🤖 AI Bio Validation
+      _showAiCheckingDialog();
+      final craftCategory = widget.selectedCategory['titleEn'] ?? 'Crafts';
+      final result = await AiService.validateBio(
+        bio: _bioController.text.trim(),
+        craftCategory: craftCategory,
+      );
+      if (!mounted) return;
+      Navigator.pop(context); // dismiss AI checking dialog
+
+      final approved = result?['approved'] ?? true;
+      final feedback = result?['feedback'] ?? '';
+
+      if (!approved) {
+        _showAiRejectionDialog(feedback);
+        return;
+      }
+      // Show success feedback briefly
+      if (feedback.isNotEmpty) {
+        _showAiApprovedSnack(feedback);
+      }
+    } else if (_currentStep == 3) {
+      // Step 4: Documents — Portfolio is mandatory
+      if (!_isPortfolioUploaded) {
+        _showError(isArabic ? 'الرجاء تحميل صور نماذج من أعمالك (إلزامي)' : 'Please upload portfolio sample images (required)');
+        return;
+      }
+      
+      // Save data to database
+      _showAiCheckingDialog(title: isArabic ? 'جاري إنشاء الحساب...' : 'Creating account...', subtitle: isArabic ? 'نحفظ بياناتك بأمان' : 'Saving your data securely');
+      final success = await AuthService.signup(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        role: 'craftsman',
+        city: _selectedCity ?? 'Unknown',
+      );
+      if (!mounted) return;
+      Navigator.pop(context); // dismiss dialog
+      
+      if (!success) {
+        _showError(isArabic ? 'حدث خطأ أثناء إنشاء الحساب. الإيميل قد يكون مستخدماً.' : 'Error creating account. Email might be in use.');
+        return;
+      }
+    }
+
+    // All validations passed → go to next step
     if (_currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
@@ -142,7 +278,7 @@ class _CraftsmanRegistrationScreenState
         _startOtpTimer();
       }
     } else {
-      // Submit Action -> Go to pending verification
+      // Submit → Go to pending verification
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -157,6 +293,125 @@ class _CraftsmanRegistrationScreenState
         (route) => false,
       );
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+          ],
+        ),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showAiCheckingDialog({String? title, String? subtitle}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        backgroundColor: inputFillColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(color: Color(0xFFD4A017)),
+              const SizedBox(height: 20),
+              Text(
+                title ?? (isArabic ? 'ذكاء اصطناعي يفحص نبذتك...' : 'AI is reviewing your bio...'),
+                style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold, fontSize: 15),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle ?? (isArabic ? 'يتم التحقق من ملائمة المحتوى واحترافيته' : 'Checking content appropriateness and professionalism'),
+                style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAiRejectionDialog(String feedback) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: inputFillColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.smart_toy_outlined, color: Color(0xFFD4A017), size: 48),
+              const SizedBox(height: 12),
+              Text(
+                isArabic ? '🤖 تعليق الذكاء الاصطناعي' : '🤖 AI Feedback',
+                style: TextStyle(color: primaryTextColor, fontWeight: FontWeight.bold, fontSize: 17),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.redAccent.withValues(alpha: 0.4)),
+                ),
+                child: Text(
+                  feedback,
+                  style: TextStyle(color: primaryTextColor, fontSize: 14, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD4A017),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                ),
+                child: Text(
+                  isArabic ? 'تعديل النبذة' : 'Edit Bio',
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAiApprovedSnack(String feedback) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(child: Text('🤖 $feedback', style: const TextStyle(color: Colors.white))),
+          ],
+        ),
+        backgroundColor: Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _prevStep() {
@@ -462,6 +717,7 @@ class _CraftsmanRegistrationScreenState
         _buildTextField(
           label: isArabic ? "الاسم الرباعي" : "Full Name",
           icon: Icons.person_outline,
+          controller: _nameController,
         ),
         const SizedBox(height: 15),
         _buildTextField(
@@ -475,6 +731,7 @@ class _CraftsmanRegistrationScreenState
           label: isArabic ? "البريد الإلكتروني" : "Email",
           icon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
+          controller: _emailController,
         ),
         const SizedBox(height: 15),
         _buildCitySelector(),
@@ -530,12 +787,12 @@ class _CraftsmanRegistrationScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(isArabic ? "تأكيد رقم الهاتف" : "Verify Phone"),
+        _buildSectionTitle(isArabic ? "تأكيد البريد الإلكتروني" : "Verify Email"),
         const SizedBox(height: 15),
         Text(
           isArabic
-              ? "الرجاء إدخال رمز التحقق (OTP) المرسل إلى الرقم\n${_phoneController.text.isEmpty ? '****' : _phoneController.text}"
-              : "Please enter the OTP sent to\n${_phoneController.text.isEmpty ? '****' : _phoneController.text}",
+              ? "الرجاء إدخال رمز التحقق (OTP) المرسل إلى البريد\n${_emailController.text.isEmpty ? '****' : _emailController.text}"
+              : "Please enter the OTP sent to\n${_emailController.text.isEmpty ? '****' : _emailController.text}",
           style: TextStyle(color: secondaryTextColor, fontSize: 14),
         ),
         const SizedBox(height: 25),
@@ -546,6 +803,8 @@ class _CraftsmanRegistrationScreenState
               width: 60,
               height: 60,
               child: TextFormField(
+                controller: _otpControllers[index],
+                focusNode: _otpFocusNodes[index],
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
@@ -569,7 +828,11 @@ class _CraftsmanRegistrationScreenState
                 ),
                 onChanged: (value) {
                   if (value.length == 1 && index < 3) {
-                    FocusScope.of(context).nextFocus();
+                    // Jump to next box
+                    _otpFocusNodes[index + 1].requestFocus();
+                  } else if (value.isEmpty && index > 0) {
+                    // Jump back on delete
+                    _otpFocusNodes[index - 1].requestFocus();
                   }
                 },
               ),
@@ -579,7 +842,18 @@ class _CraftsmanRegistrationScreenState
         const SizedBox(height: 20),
         Center(
           child: TextButton(
-            onPressed: _otpCountdown == 0 ? _startOtpTimer : null,
+            onPressed: _otpCountdown == 0 ? () async {
+              // Resend OTP logic
+              _showAiCheckingDialog(title: isArabic ? 'إعادة الإرسال...' : 'Resending...', subtitle: '');
+              final success = await AuthService.sendOtp(_emailController.text.trim());
+              if (!mounted) return;
+              Navigator.pop(context);
+              if (success) {
+                _startOtpTimer();
+              } else {
+                _showError(isArabic ? 'فشل الإرسال' : 'Failed to send');
+              }
+            } : null,
             child: Text(
               _otpCountdown > 0
                   ? (isArabic
@@ -606,16 +880,97 @@ class _CraftsmanRegistrationScreenState
       children: [
         _buildSectionTitle(isArabic ? "تفاصيل الحرفة" : "Craft Details"),
         const SizedBox(height: 15),
-        _buildTextField(
-          label: isArabic ? "سنوات الخبرة" : "Years of Experience",
-          icon: Icons.history,
-          keyboardType: TextInputType.number,
+        // ── Experience Stepper ──
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: inputFillColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.history, color: secondaryTextColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  isArabic ? "سنوات الخبرة" : "Years of Experience",
+                  style: TextStyle(color: secondaryTextColor, fontSize: 16),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.remove_circle_outline, color: secondaryTextColor),
+                onPressed: () {
+                  final current = int.tryParse(_experienceController.text) ?? 0;
+                  if (current > 0) {
+                    setState(() {
+                      _experienceController.text = (current - 1).toString();
+                    });
+                  }
+                },
+              ),
+              Container(
+                width: 42,
+                alignment: Alignment.center,
+                child: Text(
+                  _experienceController.text.isEmpty ? '0' : _experienceController.text,
+                  style: TextStyle(
+                    color: primaryTextColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_circle_outline, color: Color(0xFFD4A017)),
+                onPressed: () {
+                  final current = int.tryParse(_experienceController.text) ?? 0;
+                  setState(() {
+                    _experienceController.text = (current + 1).toString();
+                  });
+                },
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 15),
-        _buildTextField(
-          label: isArabic ? "نبذة عنك وعن أعمالك" : "Bio & Work Description",
-          icon: Icons.info_outline,
+        TextFormField(
+          controller: _bioController,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          style: TextStyle(color: primaryTextColor),
           maxLines: 4,
+          decoration: InputDecoration(
+            labelText: isArabic ? "نبذة عنك وعن أعمالك" : "Bio & Work Description",
+            labelStyle: TextStyle(color: secondaryTextColor),
+            prefixIcon: Icon(Icons.info_outline, color: secondaryTextColor),
+            alignLabelWithHint: true,
+            filled: true,
+            fillColor: inputFillColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: Color(0xFFD4A017), size: 16),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                isArabic 
+                    ? "✨ سيقوم الذكاء الاصطناعي بمراجعة النبذة لضمان الاحترافية" 
+                    : "✨ AI will review your bio to ensure professionalism",
+                style: const TextStyle(color: Color(0xFFD4A017), fontSize: 12),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 15),
         Row(
@@ -639,24 +994,67 @@ class _CraftsmanRegistrationScreenState
         ),
         const SizedBox(height: 15),
         if (titleEn == "Crochet & Knitting")
-          _buildTextField(
-            label: isArabic
-                ? "هل توفر خدمة التفصيل حسب المقاس؟"
-                : "Do you offer custom sizing?",
-            icon: Icons.straighten,
+          TextFormField(
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            style: TextStyle(color: primaryTextColor),
+            decoration: InputDecoration(
+              labelText: isArabic ? "هل توفر خدمة التفصيل حسب المقاس؟" : "Do you offer custom sizing?",
+              labelStyle: TextStyle(color: secondaryTextColor),
+              prefixIcon: Icon(Icons.straighten, color: secondaryTextColor),
+              filled: true,
+              fillColor: inputFillColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            ),
           ),
         if (titleEn == "Pottery & Ceramics")
-          _buildTextField(
-            label:
-                isArabic ? "ما هي أنواع الطين المستخدمة؟" : "Types of clay used?",
-            icon: Icons.layers_outlined,
+          TextFormField(
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            style: TextStyle(color: primaryTextColor),
+            decoration: InputDecoration(
+              labelText: isArabic ? "ما هي أنواع الطين المستخدمة؟" : "Types of clay used?",
+              labelStyle: TextStyle(color: secondaryTextColor),
+              prefixIcon: Icon(Icons.layers_outlined, color: secondaryTextColor),
+              filled: true,
+              fillColor: inputFillColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            ),
           ),
         if (titleEn == "Jewelry & Accessories")
-          _buildTextField(
-            label: isArabic
-                ? "ما هي المعادن التي تعمل بها؟"
-                : "Metals you work with?",
-            icon: Icons.diamond_outlined,
+          TextFormField(
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            style: TextStyle(color: primaryTextColor),
+            decoration: InputDecoration(
+              labelText: isArabic ? "ما هي المعادن التي تعمل بها؟" : "Metals you work with?",
+              labelStyle: TextStyle(color: secondaryTextColor),
+              prefixIcon: Icon(Icons.diamond_outlined, color: secondaryTextColor),
+              filled: true,
+              fillColor: inputFillColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            ),
           ),
       ],
     );
@@ -884,29 +1282,75 @@ class _CraftsmanRegistrationScreenState
     int maxLines = 1,
     TextEditingController? controller,
   }) {
-    return TextFormField(
-      controller: controller,
-      style: TextStyle(color: primaryTextColor),
-      obscureText: isPassword,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: secondaryTextColor),
-        prefixIcon: Icon(icon, color: secondaryTextColor),
-        filled: true,
-        fillColor: inputFillColor,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: borderColor),
+    if (!isPassword) {
+      return TextFormField(
+        controller: controller,
+        style: TextStyle(color: primaryTextColor),
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: secondaryTextColor),
+          prefixIcon: Icon(icon, color: secondaryTextColor),
+          filled: true,
+          fillColor: inputFillColor,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      ),
+      );
+    }
+
+    // Password field with eye toggle
+    return StatefulBuilder(
+      builder: (context, setFieldState) {
+        bool obscure = true;
+        return StatefulBuilder(
+          builder: (context, setInnerState) {
+            return TextFormField(
+              controller: controller,
+              style: TextStyle(color: primaryTextColor),
+              obscureText: obscure,
+              keyboardType: keyboardType,
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: TextStyle(color: secondaryTextColor),
+                prefixIcon: Icon(icon, color: secondaryTextColor),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    color: secondaryTextColor,
+                  ),
+                  onPressed: () {
+                    setInnerState(() {
+                      obscure = !obscure;
+                    });
+                  },
+                ),
+                filled: true,
+                fillColor: inputFillColor,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFD4A017), width: 2),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

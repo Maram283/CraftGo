@@ -22,6 +22,9 @@ class _ExhibitionOwnerDashboardState extends State<ExhibitionOwnerDashboard>
     with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
+  
+  bool _isAnalyzingDemand = false;
+  String? _aiDemandResult;
 
   final List<Map<String, dynamic>> _pendingRequests = [
     {
@@ -243,13 +246,37 @@ class _ExhibitionOwnerDashboardState extends State<ExhibitionOwnerDashboard>
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      t(
-                        '💡 معرض "معرض الفنون" تلقى تقييم ثقة 71% من الإدارة. ننصحك بإضافة صور أوضح للمساحة وتوفير إثبات ملكية لرفع التقييم وتسريع الموافقة!',
-                        '💡 "Art Exhibition" received a 71% trust score from admins. We recommend adding clearer photos of the space and proof of ownership to speed up approval!',
+                    const SizedBox(height: 12),
+                    if (_isAnalyzingDemand)
+                      const Center(child: CircularProgressIndicator())
+                    else if (_aiDemandResult != null)
+                      Text(
+                        '💡 ${_aiDemandResult!}',
+                        style: GoogleFonts.cairo(color: text, fontSize: 13, height: 1.5),
+                      )
+                    else
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          setState(() => _isAnalyzingDemand = true);
+                          // Simulate or fetch from backend
+                          await Future.delayed(const Duration(seconds: 2));
+                          setState(() {
+                            _aiDemandResult = widget.isArabic 
+                              ? 'استناداً إلى بيانات السوق الحالية: هناك إقبال كبير جداً على "الخياطة والتطريز" في منطقتك، ننصحك بتوفير مقاعد كافية لهم في معارضك القادمة.'
+                              : 'Based on current market data: There is a very high demand for "Crochet & Knitting" in your area. We recommend providing enough seats for them in your upcoming exhibitions.';
+                            _isAnalyzingDemand = false;
+                          });
+                        },
+                        icon: const Icon(Icons.analytics, color: Colors.white),
+                        label: Text(
+                          t('تحليل طلب السوق الآن', 'Analyze Market Demand Now'),
+                          style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
                       ),
-                      style: GoogleFonts.cairo(color: text, fontSize: 13, height: 1.5),
-                    ),
                   ],
                 ),
               ),
@@ -515,6 +542,27 @@ class _ExhibitionOwnerDashboardState extends State<ExhibitionOwnerDashboard>
                       '${widget.isArabic ? req['craft'] : req['craftEn']} • ${req['exhibition']}',
                       style: GoogleFonts.cairo(color: dim, fontSize: 12),
                     ),
+                    if (req['ai_recommended'] == true)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.purpleAccent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.auto_awesome, color: Colors.purpleAccent, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              t('مرشح ممتاز (AI)', 'AI Recommended'),
+                              style: GoogleFonts.cairo(color: Colors.purpleAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),

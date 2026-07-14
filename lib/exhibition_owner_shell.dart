@@ -222,7 +222,8 @@ class _ExhibitionOwnerProfilePage extends StatelessWidget {
           const SizedBox(height: 24),
           OutlinedButton(
             onPressed: () {
-              Navigator.pop(context);
+              // Pop all screens until the very first route (login/role selection)
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.redAccent,

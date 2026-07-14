@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'exhibition_detail_screen.dart';
 import 'exhibition_capacity_screen.dart';
+import 'services/exhibitions_service.dart';
+import 'services/session_service.dart';
+import 'services/upload_service.dart';
+import 'utils/app_feedback.dart';
 
 class MyExhibitionsScreen extends StatefulWidget {
   final bool isArabic;
@@ -504,11 +509,23 @@ class _MyExhibitionsScreenState extends State<MyExhibitionsScreen> {
       ),
     );
   }
-
   void _showAddExhibitionBottomSheet(BuildContext context) {
     _titleController.clear();
     _descController.clear();
     _locationController.clear();
+    
+    int totalCapacity = 10;
+    File? selectedImage;
+    bool isUploading = false;
+    
+    Map<String, Map<String, dynamic>> allCategories = {
+      'Crochet & Knitting':     {'ar': 'خياطة وتطريز',        'icon': Icons.checkroom_outlined,        'seats': 2},
+      'Pottery & Ceramics':     {'ar': 'الفخار والخزف',       'icon': Icons.local_cafe_outlined,       'seats': 2},
+      'Jewelry & Accessories':  {'ar': 'الحلي والمجوهرات',    'icon': Icons.watch_outlined,            'seats': 2},
+      'Woodworking':            {'ar': 'أعمال الخشب والأثاث', 'icon': Icons.chair_outlined,            'seats': 2},
+      'Weaving & Baskets':      {'ar': 'صناعة السلال والقش',  'icon': Icons.shopping_basket_outlined,  'seats': 1},
+      'Painting & Decoration':  {'ar': 'الرسم والزخرفة',      'icon': Icons.brush_outlined,            'seats': 1},
+    };
 
     showModalBottomSheet(
       context: context,
@@ -554,27 +571,46 @@ class _MyExhibitionsScreenState extends State<MyExhibitionsScreen> {
                     ),
                     const SizedBox(height: 24),
                     // Image Placeholder
-                    Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: border),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_photo_alternate,
-                                size: 40, color: dim),
-                            const SizedBox(height: 8),
-                            Text(
-                              t('إضافة صورة المعرض', 'Add Exhibition Image'),
-                              style:
-                                  GoogleFonts.cairo(color: dim, fontSize: 14),
-                            ),
-                          ],
+                    GestureDetector(
+                      onTap: () async {
+                        final picker = ImagePicker();
+                        final picked = await picker.pickImage(source: ImageSource.gallery);
+                        if (picked != null) {
+                          setModalState(() {
+                            selectedImage = File(picked.path);
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: border),
+                          image: selectedImage != null
+                              ? DecorationImage(
+                                  image: FileImage(selectedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: selectedImage == null
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_photo_alternate,
+                                        size: 40, color: dim),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      t('إضافة صورة المعرض', 'Add Exhibition Image'),
+                                      style:
+                                          GoogleFonts.cairo(color: dim, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -612,10 +648,25 @@ class _MyExhibitionsScreenState extends State<MyExhibitionsScreen> {
                                           ? 'المدينة'
                                           : 'the city')
                                       : _locationController.text;
-                                  setModalState(() {
-                                    _descController.text = widget.isArabic
+                                  
+                                  String desc = widget.isArabic
                                         ? 'يُقام $title في $loc، وهو معرض حرفي متخصص يجمع أمهر الحرفيين المحليين لعرض إبداعاتهم وأعمالهم الفنية الأصيلة. يهدف المعرض إلى تعزيز الثقافة الحرفية ودعم الحرفيين المحليين.'
                                         : 'Taking place in $loc, $title is a specialized craft exhibition bringing together the most skilled local artisans to showcase their authentic creative works and traditional crafts. The exhibition aims to promote craft culture and support local artisans.';
+                                        
+                                  final aiResult = await ExhibitionsService.suggestCapacities(desc, totalCapacity);
+                                  
+                                  setModalState(() {
+                                    _descController.text = desc;
+                                    if (aiResult != null && aiResult['suggestion'] != null) {
+                                      // Apply AI suggestion seats to allCategories
+                                      final suggestion = Map<String, dynamic>.from(aiResult['suggestion']);
+                                      suggestion.forEach((key, value) {
+                                        if (allCategories.containsKey(key)) {
+                                          allCategories[key]!['seats'] = value as int;
+                                        }
+                                      });
+                                      totalCapacity = allCategories.values.fold(0, (sum, cat) => sum + (cat['seats'] as int));
+                                    }
                                     _isGeneratingAI = false;
                                   });
                                 },
@@ -634,6 +685,128 @@ class _MyExhibitionsScreenState extends State<MyExhibitionsScreen> {
                     ),
                     const SizedBox(height: 8),
                     _buildTextField(_descController, '', maxLines: 4),
+                    const SizedBox(height: 24),
+                    
+                    // Capacity Distribution
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            widget.isArabic ? 'توزيع المقاعد' : 'Seat Allocation',
+                            style: GoogleFonts.cairo(color: text, fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: accent.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${widget.isArabic ? 'الإجمالي' : 'Total'}: $totalCapacity',
+                              style: GoogleFonts.cairo(color: accent, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: border),
+                      ),
+                      child: Column(
+                        children: allCategories.entries.toList().asMap().entries.map((indexed) {
+                          final i = indexed.key;
+                          final entry = indexed.value;
+                          final catKey = entry.key;
+                          final catData = entry.value;
+                          final int seats = catData['seats'] as int;
+                          final bool isLast = i == allCategories.length - 1;
+
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 36,
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        color: accent.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(catData['icon'] as IconData, color: accent, size: 20),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        widget.isArabic ? catData['ar'] as String : catKey,
+                                        style: GoogleFonts.cairo(color: text, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            if (seats > 0) {
+                                              setModalState(() {
+                                                allCategories[catKey]!['seats'] = seats - 1;
+                                                totalCapacity--;
+                                              });
+                                            }
+                                          },
+                                          borderRadius: BorderRadius.circular(20),
+                                          child: Container(
+                                            width: 30, height: 30,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: seats > 0 ? Colors.redAccent.withValues(alpha: 0.15) : border,
+                                            ),
+                                            child: Icon(Icons.remove, color: seats > 0 ? Colors.redAccent : dim, size: 18),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 36,
+                                          child: Text(
+                                            '$seats',
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.cairo(color: text, fontSize: 17, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            setModalState(() {
+                                              allCategories[catKey]!['seats'] = seats + 1;
+                                              totalCapacity++;
+                                            });
+                                          },
+                                          borderRadius: BorderRadius.circular(20),
+                                          child: Container(
+                                            width: 30, height: 30,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: accent.withValues(alpha: 0.15),
+                                            ),
+                                            child: Icon(Icons.add, color: accent, size: 18),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!isLast) Divider(height: 1, color: border, indent: 64),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    
                     const SizedBox(height: 24),
                     // Suggest Artisans
                     ElevatedButton.icon(
@@ -671,14 +844,53 @@ class _MyExhibitionsScreenState extends State<MyExhibitionsScreen> {
                         Expanded(
                           flex: 2,
                           child: ElevatedButton(
-                            onPressed: () => Navigator.pop(ctx),
+                            onPressed: isUploading ? null : () async {
+                              if (_titleController.text.isEmpty || _locationController.text.isEmpty) {
+                                AppFeedback.showWarning(context, t('يرجى ملء كافة البيانات', 'Please fill all fields'));
+                                return;
+                              }
+                            
+                              setModalState(() => isUploading = true);
+                              AppFeedback.showLoading(context, message: t('جاري إنشاء المعرض...', 'Creating Exhibition...'));
+
+                              // Build categoryCapacities from allCategories for the API
+                              final Map<String, int> categoryCapacities = {};
+                              allCategories.forEach((key, data) {
+                                categoryCapacities[key] = data['seats'] as int;
+                              });
+
+                              String? imageUrl;
+                              if (selectedImage != null) {
+                                imageUrl = await UploadService.uploadImage(selectedImage!);
+                              }
+                              
+                              final userId = await SessionService.getUserId();
+
+                              // Save to DB
+                              await ExhibitionsService.createExhibition({
+                                'ownerId': userId ?? 'c3b5c3b5-c3b5-c3b5-c3b5-c3b5c3b5c3b5',
+                                'name': _titleController.text,
+                                'location': _locationController.text,
+                                'capacity': totalCapacity,
+                                'categoryCapacities': categoryCapacities,
+                                'imageUrl': imageUrl,
+                              });
+                              
+                              if (context.mounted) {
+                                AppFeedback.hideLoading(context);
+                                Navigator.pop(ctx);
+                                AppFeedback.showSuccess(context, t('تم إنشاء المعرض بنجاح!', 'Exhibition created successfully!'));
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accent,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16)),
                             ),
-                            child: Text(
+                            child: isUploading
+                                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.black))
+                                : Text(
                               t('حفظ المعرض', 'Save Exhibition'),
                               style: GoogleFonts.cairo(
                                 color: Colors.black,

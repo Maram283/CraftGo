@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/exhibitions_service.dart';
 import 'services/ai_service.dart';
@@ -31,8 +31,6 @@ class _CraftsmanExhibitionsScreenState extends State<CraftsmanExhibitionsScreen>
   String t(String ar, String en) => widget.isArabic ? ar : en;
 
   late Future<List<dynamic>> _myExhibitionsFuture;
-  String? _currentUserId;
-
   @override
   void initState() {
     super.initState();
@@ -40,9 +38,7 @@ class _CraftsmanExhibitionsScreenState extends State<CraftsmanExhibitionsScreen>
   }
 
   Future<void> _loadUserAndExhibitions() async {
-    final token = await ApiService.getToken();
     setState(() {
-      _currentUserId = token ?? 'demo-craftsman';
       _myExhibitionsFuture = ExhibitionsService.getAllExhibitions();
     });
   }

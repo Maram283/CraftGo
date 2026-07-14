@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'order_confirmation_screen.dart';
 import 'location_picker_screen.dart';
+import 'services/products_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CartScreen — سلة الشراء
@@ -366,17 +367,59 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  void _showSuccessOrder() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OrderConfirmationScreen(
-          isArabic: widget.isArabic,
-          isDarkMode: widget.isDarkMode,
-          orderNumber: '#CR-2026-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}',
-        ),
+  void _showSuccessOrder() async {
+    // Show a loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFFD4A017)),
       ),
     );
+
+    // Call checkout API for all items in the cart
+    bool success = true;
+    for (var item in _items) {
+      final ok = await ProductsService.placeOrder(
+        customerId: 'demo-user', // Use demo user for testing
+        productId: item.id,
+        deliveryAddress: _deliveryAddress.isNotEmpty ? _deliveryAddress : 'Ramallah, Palestine',
+      );
+      if (!ok) {
+        success = false;
+      }
+    }
+
+    if (mounted) {
+      Navigator.pop(context); // Dismiss loading dialog
+    }
+
+    if (success) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderConfirmationScreen(
+              isArabic: widget.isArabic,
+              isDarkMode: widget.isDarkMode,
+              orderNumber: '#CR-2026-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}',
+            ),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t('حدث خطأ أثناء إتمام الطلب', 'An error occurred during checkout'),
+              style: GoogleFonts.cairo(),
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildBottomSummary() {

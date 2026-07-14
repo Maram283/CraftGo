@@ -31,10 +31,8 @@ class _ArtisanProfilePageState extends State<ArtisanProfilePage>
   bool _following = false;
   bool _isFavorite = false;
   int _productTab = 0;
+  DateTime? _selectedDay;
   late TabController _tabController;
-
-  // ── Calendar state ──────────────────────────────────────────────────────
-  DateTime _selectedDay = DateTime.now(); // for highlighting today
 
   @override
   void initState() {

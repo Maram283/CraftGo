@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/chat_service.dart';
 import 'chat_screen.dart';
@@ -101,7 +101,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
             return ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: chats.length,
-              separatorBuilder: (_, __) => Divider(
+              separatorBuilder: (_, _) => Divider(
                 color: border,
                 height: 1,
                 indent: 80,

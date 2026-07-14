@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'role_selection_screen.dart';
+import 'main_shell.dart';
+import 'services/session_service.dart';
+import 'craftsman_shell.dart';
+import 'exhibition_owner_shell.dart';
 
 void main() {
   runApp(const CraftGoApp());
@@ -20,6 +24,70 @@ class CraftGoApp extends StatefulWidget {
 class _CraftGoAppState extends State<CraftGoApp> {
   bool isArabic = true;
   bool isDarkMode = true;
+  bool _isLoading = true;
+  Widget? _initialScreen;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    final isLoggedIn = await SessionService.isLoggedIn();
+    if (isLoggedIn) {
+      final role = await SessionService.getRole();
+      final name = await SessionService.getName() ?? 'مستخدم';
+
+      Widget shell;
+      if (role == 'صاحب معرض' || role == 'exhibition_owner') {
+        shell = ExhibitionOwnerShell(
+          isArabic: isArabic,
+          isDarkMode: isDarkMode,
+          onToggleLanguage: toggleLanguage,
+          onToggleTheme: toggleTheme,
+          ownerName: name,
+        );
+      } else if (role == 'craftsman' || role == 'حرفي') {
+        shell = CraftsmanShell(
+          isArabic: isArabic,
+          isDarkMode: isDarkMode,
+          onToggleLanguage: toggleLanguage,
+          onToggleTheme: toggleTheme,
+          craftsmanName: name,
+          craftsmanCategoryAr: 'حرفي',
+          craftsmanCategoryEn: 'Craftsman',
+          craftsmanCity: '',
+          craftsmanBio: '',
+          craftsmanExperience: '',
+        );
+      } else {
+        // customer / client → MainShell
+        shell = MainShell(
+          isArabic: isArabic,
+          isDarkMode: isDarkMode,
+          onToggleLanguage: toggleLanguage,
+          onToggleTheme: toggleTheme,
+          userName: name,
+        );
+      }
+
+      setState(() {
+        _initialScreen = shell;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _initialScreen = OnboardingScreen(
+          isArabic: isArabic,
+          isDarkMode: isDarkMode,
+          onToggleLanguage: toggleLanguage,
+          onToggleTheme: toggleTheme,
+        );
+        _isLoading = false;
+      });
+    }
+  }
 
   void toggleLanguage() {
     setState(() {
@@ -44,15 +112,9 @@ class _CraftGoAppState extends State<CraftGoApp> {
         scaffoldBackgroundColor: const Color(0xFF0D1420),
         useMaterial3: true,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => OnboardingScreen(
-              isArabic: isArabic,
-              isDarkMode: isDarkMode,
-              onToggleLanguage: toggleLanguage,
-              onToggleTheme: toggleTheme,
-            ),
-      },
+      home: _isLoading
+          ? const Scaffold(body: Center(child: CircularProgressIndicator(color: Color(0xFFD4A017))))
+          : _initialScreen,
     );
   }
 }
@@ -447,10 +509,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Widget _glassCard(
-    String imagePath, {
-    required double width,
-    required double height,
-  }) {
+      String imagePath, {
+        required double width,
+        required double height,
+      }) {
     return Container(
       width: width,
       height: height,

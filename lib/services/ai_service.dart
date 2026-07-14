@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_service.dart';
 
@@ -34,6 +34,29 @@ class AiService {
     try {
       final response = await http.get(
         Uri.parse('${ApiService.baseUrl}/ai/match-standby/$exhibitionId'),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // AI Bio Validation - check if bio is appropriate and professional
+  static Future<Map<String, dynamic>?> validateBio({
+    required String bio,
+    required String craftCategory,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiService.baseUrl}/ai/validate-bio'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'bio': bio,
+          'craftCategory': craftCategory,
+        }),
       );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);

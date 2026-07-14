@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_service.dart';
 
@@ -18,6 +18,7 @@ class ProductsService {
     required String description,
     required double price,
     required String category,
+    String? imageUrl,
   }) async {
     try {
       final response = await http.post(
@@ -30,6 +31,7 @@ class ProductsService {
           'description': description,
           'price': price,
           'category': category,
+          if (imageUrl != null) 'imageUrl': imageUrl,
         }),
       );
       return response.statusCode == 201;

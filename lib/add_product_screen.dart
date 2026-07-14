@@ -1,14 +1,22 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'services/session_service.dart';
+import 'services/upload_service.dart';
+import 'services/products_service.dart';
+import 'utils/app_feedback.dart';
 
 class AddProductScreen extends StatefulWidget {
   final bool isArabic;
   final bool isDarkMode;
+  final String selectedCategory;
 
   const AddProductScreen({
     super.key,
     required this.isArabic,
     required this.isDarkMode,
+    this.selectedCategory = 'عام',
   });
 
   @override
@@ -20,9 +28,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
 
+  File? _selectedImage;
   bool _isGeneratingBackground = false;
   bool _isPricing = false;
-  bool _hasImage = false;
+  bool _isSaving = false;
   bool _hasAiBackground = false;
 
   Color get bg =>
@@ -109,8 +118,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 12),
               GestureDetector(
-                onTap: () {
-                  setState(() => _hasImage = true);
+                onTap: () async {
+                  final picker = ImagePicker();
+                  final picked = await picker.pickImage(source: ImageSource.gallery);
+                  if (picked != null) {
+                    setState(() => _selectedImage = File(picked.path));
+                  }
                 },
                 child: Container(
                   height: 200,
@@ -123,7 +136,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       width: _hasAiBackground ? 2 : 1,
                     ),
                   ),
-                  child: !_hasImage
+                  child: _selectedImage == null
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -159,13 +172,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                             size: 80, color: Colors.white70),
                                       ),
                                     ) // Mock AI background
-                                  : Container(
-                                      color: Colors.grey.withValues(alpha: 0.3),
-                                      child: const Center(
-                                        child: Icon(Icons.image,
-                                            size: 80, color: Colors.white),
-                                      ),
-                                    ), // Mock raw image
+                                  : Image.file(_selectedImage!, fit: BoxFit.cover),
                             ),
                             if (_isGeneratingBackground)
                               Container(
@@ -192,7 +199,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         ),
                 ),
               ),
-              if (_hasImage && !_hasAiBackground && !_isGeneratingBackground) ...[
+              if (_selectedImage != null && !_hasAiBackground && !_isGeneratingBackground) ...[
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: _generateAiBackground,
@@ -266,8 +273,42 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
               // Save Button
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
+                onPressed: _isSaving ? null : () async {
+                  if (_titleController.text.isEmpty || _priceController.text.isEmpty) {
+                    AppFeedback.showWarning(context, t('يرجى كتابة الاسم والسعر', 'Please enter title and price'));
+                    return;
+                  }
+                  
+                  setState(() => _isSaving = true);
+                  AppFeedback.showLoading(context, message: t('جاري حفظ المنتج...', 'Saving Product...'));
+                  
+                  String? imageUrl;
+                  if (_selectedImage != null) {
+                    imageUrl = await UploadService.uploadImage(_selectedImage!);
+                  }
+                  
+                  final userId = await SessionService.getUserId() ?? 'demo-craftsman-id';
+                  
+                  final success = await ProductsService.createProduct(
+                    craftsmanId: userId,
+                    titleAr: _titleController.text,
+                    titleEn: _titleController.text,
+                    description: _descController.text,
+                    price: double.tryParse(_priceController.text) ?? 0.0,
+                    category: widget.selectedCategory,
+                    imageUrl: imageUrl,
+                  );
+                  
+                  if (context.mounted) {
+                    AppFeedback.hideLoading(context);
+                    if (success) {
+                      Navigator.pop(context);
+                      AppFeedback.showSuccess(context, t('تم حفظ المنتج بنجاح', 'Product saved successfully'));
+                    } else {
+                      setState(() => _isSaving = false);
+                      AppFeedback.showError(context, t('فشل حفظ المنتج', 'Failed to save product'));
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent,
@@ -275,7 +316,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
                 ),
-                child: Text(
+                child: _isSaving 
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.black))
+                  : Text(
                   t('حفظ المنتج', 'Save Product'),
                   style: GoogleFonts.cairo(
                     color: Colors.black,

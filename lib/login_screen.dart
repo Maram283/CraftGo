@@ -2,9 +2,23 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'main.dart';
 import 'services/api_service.dart';
+import 'craftsman_shell.dart';
+import 'exhibition_owner_shell.dart';
+import 'main_shell.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool isArabic;
+  final bool isDarkMode;
+  final VoidCallback onToggleLanguage;
+  final VoidCallback onToggleTheme;
+
+  const LoginScreen({
+    super.key,
+    this.isArabic = true,
+    this.isDarkMode = true,
+    required this.onToggleLanguage,
+    required this.onToggleTheme,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -310,23 +324,58 @@ class _LoginScreenState extends State<LoginScreen>
 
                               setState(() => isLoading = false);
 
+                              if (!mounted) return;
+
                               if (result != null) {
-                                if (!mounted) return;
-                                Navigator.pushReplacement(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const HomeScreen(),
-                                    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                                        FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        ),
-                                    transitionDuration: const Duration(milliseconds: 400),
-                                  ),
-                                );
+                                final role = result['role'] as String? ?? '';
+                                final userName = result['name'] as String? ?? 'مستخدم';
+
+                                if (role == 'exhibition_owner') {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (ctx, a, b) => ExhibitionOwnerShell(
+                                        isArabic: widget.isArabic,
+                                        isDarkMode: widget.isDarkMode,
+                                        onToggleLanguage: widget.onToggleLanguage,
+                                        onToggleTheme: widget.onToggleTheme,
+                                        ownerName: userName,
+                                      ),
+                                      transitionDuration: const Duration(milliseconds: 400),
+                                      transitionsBuilder: (ctx, a, b, child) => FadeTransition(opacity: a, child: child),
+                                    ),
+                                  );
+                                } else if (role == 'craftsman') {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (ctx, a, b) => CraftsmanShell(
+                                        isArabic: widget.isArabic,
+                                        isDarkMode: widget.isDarkMode,
+                                        onToggleLanguage: widget.onToggleLanguage,
+                                        onToggleTheme: widget.onToggleTheme,
+                                        craftsmanName: userName,
+                                        craftsmanCategoryAr: 'حرفي',
+                                        craftsmanCategoryEn: 'Craftsman',
+                                        craftsmanCity: '',
+                                        craftsmanBio: '',
+                                        craftsmanExperience: '',
+                                      ),
+                                      transitionDuration: const Duration(milliseconds: 400),
+                                      transitionsBuilder: (ctx, a, b, child) => FadeTransition(opacity: a, child: child),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (ctx, a, b) => const HomeScreen(),
+                                      transitionDuration: const Duration(milliseconds: 400),
+                                      transitionsBuilder: (ctx, a, b, child) => FadeTransition(opacity: a, child: child),
+                                    ),
+                                  );
+                                }
                               } else {
-                                if (!mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(isAr ? 'فشلت العملية، تأكد من البيانات' : 'Failed. Check your credentials.'),

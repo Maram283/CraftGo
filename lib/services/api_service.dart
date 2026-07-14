@@ -1,6 +1,6 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'session_service.dart';
 
 class ApiService {
   // Use 10.0.2.2 for Android emulator, or your machine's IP for physical device.
@@ -8,29 +8,23 @@ class ApiService {
   static const String baseUrl = 'http://localhost:5000/api';
   
   static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
+    return await SessionService.getToken();
   }
 
   static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
+    // This is handled by saveSession now, but keeping for compatibility if used directly
   }
 
   static Future<void> saveUserRole(String role) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_role', role);
+    // This is handled by saveSession now, but keeping for compatibility if used directly
   }
 
   static Future<String?> getUserRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_role');
+    return await SessionService.getRole();
   }
 
   static Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    await prefs.remove('user_role');
+    await SessionService.clearSession();
   }
 
   static Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -43,9 +37,15 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        await saveToken(data['token']);
-        await saveUserRole(data['user']['role']);
-        return data['user'];
+        final user = data['user'];
+        await SessionService.saveSession(
+          userId: user['id']?.toString() ?? '',
+          name: user['name'] ?? '',
+          email: user['email'] ?? '',
+          role: user['role'] ?? '',
+          token: data['token'] ?? '',
+        );
+        return user;
       }
       return null;
     } catch (e) {
@@ -69,9 +69,15 @@ class ApiService {
 
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        await saveToken(data['token']);
-        await saveUserRole(data['user']['role']);
-        return data['user'];
+        final user = data['user'];
+        await SessionService.saveSession(
+          userId: user['id']?.toString() ?? '',
+          name: user['name'] ?? '',
+          email: user['email'] ?? '',
+          role: user['role'] ?? '',
+          token: data['token'] ?? '',
+        );
+        return user;
       }
       return null;
     } catch (e) {

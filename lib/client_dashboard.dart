@@ -1896,58 +1896,6 @@ class _ClientDashboardState extends State<ClientDashboard> {
     );
   }
 
-  Widget _buildCategoryChip({
-    required IconData icon,
-    required String title,
-    required bool isSelected,
-    required int index,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedFilterIndex = index;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.only(left: 10, right: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFD4A017)
-              : (isDarkMode
-                    ? Colors.white.withValues(alpha: 0.04)
-                    : Colors.black.withValues(alpha: 0.02)),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? const Color(0xFFD4A017) : cardBorderColor,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected
-                  ? Colors.black
-                  : (isDarkMode ? Colors.white70 : Colors.black87),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.black
-                    : (isDarkMode ? Colors.white70 : Colors.black87),
-                fontSize: 12.5,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildCraftsmanCard({
     required String name,
@@ -2052,41 +2000,6 @@ class _ClientDashboardState extends State<ClientDashboard> {
     );
   }
 
-  Widget _topBarButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: topButtonBackground,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: chipBorderColor),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: topIconColor),
-            if (label.isNotEmpty) ...[
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: topIconColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 
   void _showComments() {
     showModalBottomSheet(

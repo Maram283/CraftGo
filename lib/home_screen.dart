@@ -5,8 +5,9 @@ import 'explore_exhibitions_screen.dart';
 import 'craftsman_exhibitions_screen.dart';
 import 'admin_exhibition_screen.dart';
 import 'chats_list_screen.dart';
-import 'admin_dashboard.dart';
+import 'admin_shell.dart';
 import 'cart_screen.dart';
+import 'craftsman_profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -141,7 +142,12 @@ class HomeScreen extends StatelessWidget {
                 title: Text(isAr ? 'لوحة تحكم النظام (Admin)' : 'System Admin Dashboard'),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => AdminDashboard(isArabic: isAr, isDarkMode: isDark)));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => AdminShell(
+                    isArabic: isAr,
+                    isDarkMode: isDark,
+                    onToggleLanguage: () {},
+                    onToggleTheme: () {},
+                  )));
                 },
               ),
             ],
@@ -420,30 +426,53 @@ class HomeScreen extends StatelessWidget {
                       label: isAr ? 'الرئيسية' : 'Home',
                       isActive: true,
                       color: niColor,
+                      onTap: () {},
                     ),
                     _NavItem(
                       icon: Icons.search_rounded,
                       label: isAr ? 'استكشاف' : 'Explore',
                       isActive: false,
                       color: niColor,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => ExploreExhibitionsScreen(isArabic: isAr, isDarkMode: isDark)));
+                      },
                     ),
                     _NavItem(
                       icon: Icons.access_time_rounded,
                       label: isAr ? 'طلباتي' : 'Orders',
                       isActive: false,
                       color: niColor,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => CartScreen(isArabic: isAr, isDarkMode: isDark)));
+                      },
                     ),
                     _NavItem(
                       icon: Icons.chat_bubble_outline_rounded,
                       label: isAr ? 'رسائل' : 'Messages',
                       isActive: false,
                       color: niColor,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatsListScreen(currentUserId: 'demo-user', isArabic: isAr, isDarkMode: isDark)));
+                      },
                     ),
                     _NavItem(
                       icon: Icons.person_outline_rounded,
                       label: isAr ? 'حسابي' : 'Profile',
                       isActive: false,
                       color: niColor,
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => CraftsmanProfileScreen(
+                          isArabic: isAr,
+                          isDarkMode: isDark,
+                          onToggleLanguage: () {},
+                          onToggleTheme: () {},
+                          craftsmanName: isAr ? 'رنا العبدالله' : 'Rana Al-Abdullah',
+                          craftsmanCategory: isAr ? 'خياطة وتطريز' : 'Crochet & Knitting',
+                          craftsmanCity: isAr ? 'نابلس' : 'Nablus',
+                          craftsmanBio: isAr ? 'أقوم بحياكة وتطريز الأثواب والمنسوجات اليدوية التراثية بجودة عالية.' : 'I weave and embroider high-quality traditional handmade dresses and textiles.',
+                          craftsmanExperience: isAr ? '٨ سنوات' : '8 Years',
+                        )));
+                      },
                     ),
                   ],
                 ),
@@ -461,30 +490,35 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final Color color;
+  final VoidCallback onTap;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.isActive,
     required this.color,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 22, color: isActive ? const Color(0xFFE8B84B) : color),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 9,
-            color: isActive ? const Color(0xFFE8B84B) : color,
-            fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 22, color: isActive ? const Color(0xFFE8B84B) : color),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              color: isActive ? const Color(0xFFE8B84B) : color,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

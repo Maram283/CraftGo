@@ -1350,40 +1350,4 @@ class _ClientDashboardState extends State<ClientDashboard> {
       ),
     );
   }
-
-  Widget _topBarButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: topButtonBackground,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: chipBorderColor),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: topIconColor),
-            if (label.isNotEmpty) ...[
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: topIconColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }
