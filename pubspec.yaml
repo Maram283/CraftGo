@@ -1,0 +1,47 @@
+name: craftgo
+description: "CraftGo — Handcraft marketplace app."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.8
+  google_fonts: ^8.1.0
+  flutter_colorpicker: ^1.1.0
+
+  # Networking & storage
+  http: ^1.6.0
+  shared_preferences: ^2.5.5
+  socket_io_client: ^3.1.6
+
+  # Media
+  image_picker: ^1.1.2
+
+  # Maps & location — upgraded to versions that support API 34+
+  google_maps_flutter: ^2.10.0
+  geocoding: ^4.0.0
+  geolocator: ^13.0.2
+
+  # State management
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
